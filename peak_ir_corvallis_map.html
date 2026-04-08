@@ -156,6 +156,7 @@
       <div class="info-score-row">
         <span class="info-score-badge" id="infoScore">—</span>
         <span class="info-score-tier" id="infoTier">IR Score</span>
+        <button id="clearSelBtn" onclick="clearZipSelection()" style="display:none;margin-left:auto;font-size:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.6);padding:2px 7px;border-radius:4px;cursor:pointer;font-family:inherit;">× Deselect</button>
       </div>
     </div>
     <div class="info-body" id="infoBody">
@@ -243,7 +244,7 @@ function fillColor(zip) {
     return v > 75000 ? '#1b5e20' : v > 60000 ? '#2e7d32' : v > 50000 ? '#43a047' : v > 40000 ? '#81c784' : '#c8e6c9';
   }
   var s = calcScore(d);
-  return s >= 80 ? '#1565c0' : s >= 65 ? '#1976D2' : s >= 50 ? '#42A5F5' : s >= 35 ? '#90CAF9' : '#BBDEFB';
+  return s >= 80 ? '#1565c0' : s >= 65 ? '#0288d1' : s >= 50 ? '#00897b' : s >= 35 ? '#f9a825' : '#78909c';
 }
 
 function getStyle(feature) {
@@ -252,10 +253,10 @@ function getStyle(feature) {
   var d = targeting[zip];
   return {
     fillColor: fillColor(zip),
-    weight: 1.2,
-    opacity: 0.7,
-    color: 'rgba(66,165,245,0.4)',
-    fillOpacity: d ? (d.customers ? 0.85 : 0.65) : 0.2
+    weight: 1.8,
+    opacity: 1,
+    color: 'rgba(255,255,255,0.45)',
+    fillOpacity: d ? (d.customers ? 0.55 : 0.35) : 0.15
   };
 }
 
@@ -322,7 +323,7 @@ function updateLegend() {
     legend.innerHTML = '<div class="legend-title">Median Income</div>' +
       items.map(function(i){return '<div class="legend-row"><div class="legend-swatch" style="background:'+i[0]+'"></div><span class="legend-label">'+i[1]+'</span></div>';}).join('');
   } else {
-    items = [['#1565c0','80–100 Prime'],['#42A5F5','50–79 High'],['#BBDEFB','< 50 Low']];
+    items = [['#1565c0','80–100 Prime'],['#0288d1','65–79 High'],['#00897b','50–64 Moderate'],['#f9a825','35–49 Low'],['#78909c','< 35 Minimal']];
     legend.innerHTML = '<div class="legend-title">IR Score</div>' +
       items.map(function(i){return '<div class="legend-row"><div class="legend-swatch" style="background:'+i[0]+'"></div><span class="legend-label">'+i[1]+'</span></div>';}).join('');
   }
@@ -330,9 +331,27 @@ function updateLegend() {
 
 // -- CHOROPLETH LAYER --
 var choroLayer;
+var selectedZip = null;
+var selectedLayer = null;
+
+function clearZipSelection() {
+  if (selectedLayer) choroLayer.resetStyle(selectedLayer);
+  selectedZip = null;
+  selectedLayer = null;
+  var btn = document.getElementById('clearSelBtn');
+  if (btn) btn.style.display = 'none';
+  document.getElementById('infoZip').textContent = 'Select a zip';
+  document.getElementById('infoCity').textContent = 'Click any zone to see IR opportunity data';
+  document.getElementById('infoScore').textContent = '—';
+  document.getElementById('infoTier').textContent = 'IR Score';
+  document.getElementById('infoBody').innerHTML = '<div style="font-size:12px;color:rgba(255,255,255,0.35);padding:16px 0;text-align:center;">Hover or tap a zip code zone to view demographic breakdown and IR opportunity score.</div>';
+}
 
 function buildLayer() {
   if (choroLayer) map.removeLayer(choroLayer);
+  selectedZip = null; selectedLayer = null;
+  var btn = document.getElementById('clearSelBtn');
+  if (btn) btn.style.display = 'none';
   choroLayer = L.geoJSON(boundaries, {
     style: getStyle,
     onEachFeature: function(feature, layer) {
@@ -340,12 +359,27 @@ function buildLayer() {
       var zip = String(props.ZCTA5 || props.ZCTA5CE10 || props.zip || '');
       layer.on({
         mouseover: function(e) {
-          e.target.setStyle({weight: 2.5, color: '#42A5F5', fillOpacity: 0.85});
+          if (selectedZip !== zip) {
+            e.target.setStyle({weight: 2.5, color: '#ffffff', fillOpacity: 0.65});
+          }
           updateInfo(zip);
         },
-        mouseout: function(e) { choroLayer.resetStyle(e.target); },
+        mouseout: function(e) {
+          if (selectedZip === zip) {
+            e.target.setStyle({weight: 3, color: '#FFD700', fillOpacity: 0.7});
+          } else {
+            choroLayer.resetStyle(e.target);
+          }
+          if (selectedZip && selectedZip !== zip) updateInfo(selectedZip);
+        },
         click: function(e) {
+          if (selectedLayer && selectedLayer !== e.target) choroLayer.resetStyle(selectedLayer);
+          selectedZip = zip;
+          selectedLayer = e.target;
+          e.target.setStyle({weight: 3, color: '#FFD700', fillOpacity: 0.7});
           updateInfo(zip);
+          var btn = document.getElementById('clearSelBtn');
+          if (btn) btn.style.display = 'inline-block';
           if (window.innerWidth <= 768) document.getElementById('infoPanel').classList.add('mobile-open');
         }
       });
