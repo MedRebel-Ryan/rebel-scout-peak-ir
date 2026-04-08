@@ -88,9 +88,14 @@
   .contract-dot { width: 16px; height: 16px; border-radius: 50%; background: #2ecc71; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 2px 8px rgba(46,204,113,0.5); }
   .cluster-circle { border-radius: 50%; border: 2px solid rgba(255,255,255,0.25); background: rgba(255,165,0,0.25); }
 
-  /* Panel collapse */
-  .panel-collapse-btn { display: none; position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.5); border-radius: 4px; width: 24px; height: 24px; cursor: pointer; font-size: 14px; z-index: 10; align-items: center; justify-content: center; }
-  .panel-collapse-btn:hover { background: rgba(255,255,255,0.2); }
+  /* Panel minimize/collapse */
+  .panel-collapse-btn { display: flex; position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.5); border-radius: 4px; width: 24px; height: 24px; cursor: pointer; font-size: 16px; z-index: 10; align-items: center; justify-content: center; line-height: 1; }
+  .panel-collapse-btn:hover { background: rgba(255,255,255,0.2); color: rgba(255,255,255,0.9); }
+  .info-panel.minimized .info-body { display: none; }
+  .info-panel.minimized .info-footer { display: none; }
+  .layer-minimize-btn { background: none; border: none; color: rgba(255,255,255,0.35); cursor: pointer; font-size: 18px; line-height: 1; padding: 0 0 2px 0; margin-left: auto; display: flex; align-items: center; justify-content: center; }
+  .layer-minimize-btn:hover { color: rgba(255,255,255,0.85); }
+  .layer-controls.minimized #layerControlsBody { display: none; }
 
   /* Mobile */
   @media (max-width: 768px) {
@@ -145,10 +150,10 @@
   <a class="map-nav-btn" href="peak_ir_portland_map.html">Portland / Adventist</a>
 </div>
 
-<div id="map"></div>
+<div id="map">
 
 <div class="info-panel" id="infoPanel">
-  <button class="panel-collapse-btn" onclick="togglePanel()" title="Collapse">×</button>
+  <button class="panel-collapse-btn" onclick="togglePanel()" title="Minimize">−</button>
   <div id="infoPanelContent">
     <div class="info-header">
       <div class="info-zip" id="infoZip">Select a zip</div>
@@ -168,14 +173,16 @@
   </div>
 </div>
 
-<div class="layer-controls">
-  <div class="layer-title">Layers</div>
-  <label><input type="checkbox" id="showCompetitors" checked onchange="toggleCompetitors()"> Competitors</label>
-  <label><input type="checkbox" id="showContracts" checked onchange="toggleContracts()"> Peak IR Contracts</label>
-  <label><input type="checkbox" id="showRings" checked onchange="toggleRings()"> Drive Rings</label>
-  <label><input type="checkbox" id="showClusters" checked onchange="toggleClusters()"> Pop Clusters</label>
-  <label><input type="checkbox" id="showGrowth" checked onchange="toggleGrowth()"> Growth Zones</label>
-  <label><input type="checkbox" id="showLabels" checked onchange="toggleLabels()"> Zip Labels</label>
+<div class="layer-controls" id="layerControls">
+  <div class="layer-title" style="display:flex;align-items:center;">Layers<button class="layer-minimize-btn" onclick="toggleLayerControls()" title="Minimize">−</button></div>
+  <div id="layerControlsBody">
+    <label><input type="checkbox" id="showCompetitors" checked onchange="toggleCompetitors()"> Competitors</label>
+    <label><input type="checkbox" id="showContracts" checked onchange="toggleContracts()"> Peak IR Contracts</label>
+    <label><input type="checkbox" id="showRings" checked onchange="toggleRings()"> Drive Rings</label>
+    <label><input type="checkbox" id="showClusters" checked onchange="toggleClusters()"> Pop Clusters</label>
+    <label><input type="checkbox" id="showGrowth" checked onchange="toggleGrowth()"> Growth Zones</label>
+    <label><input type="checkbox" id="showLabels" checked onchange="toggleLabels()"> Zip Labels</label>
+  </div>
 </div>
 
 <div class="view-toggle">
@@ -186,6 +193,8 @@
 </div>
 
 <div class="map-legend" id="mapLegend"></div>
+
+</div>
 
 <script>
 // -- DATA --
@@ -265,11 +274,21 @@ var panelOpen = true;
 
 function togglePanel() {
   var panel = document.getElementById('infoPanel');
-  if (panel.classList.contains('mobile-open')) {
-    panel.classList.remove('mobile-open');
+  var btn = panel.querySelector('.panel-collapse-btn');
+  if (window.innerWidth <= 768) {
+    panel.classList.toggle('mobile-open');
   } else {
-    panel.classList.add('mobile-open');
+    var minimized = panel.classList.toggle('minimized');
+    if (btn) btn.textContent = minimized ? '+' : '−';
   }
+}
+
+function toggleLayerControls() {
+  var lc = document.getElementById('layerControls');
+  if (!lc) return;
+  var minimized = lc.classList.toggle('minimized');
+  var btn = lc.querySelector('.layer-minimize-btn');
+  if (btn) btn.textContent = minimized ? '+' : '−';
 }
 
 function updateInfo(zip) {
@@ -548,6 +567,9 @@ function toggleLabels() { addLabels(); }
     return '<div class="stat">' + s[0] + s[1] + '</div>' + (i < 5 ? '<div class="stat-divider"></div>' : '');
   }).join('');
 })();
+
+// -- INIT: ensure Composite view + legend are active on load --
+setView('composite');
 
 </script>
 <script>
