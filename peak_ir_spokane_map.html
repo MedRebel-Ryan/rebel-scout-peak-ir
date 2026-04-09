@@ -577,7 +577,6 @@ setView('composite');
 window._scoutMarketName = "Spokane / Coeur d'Alene";
 window._scoutMarketName = "Spokane / Coeur d'Alene";
 // -- REBEL SCOUT CHAT WIDGET --
-// REBEL SCOUT CHAT WIDGET
 // Drop-in JS chat assistant for Rebel Scout IR market maps
 // Reads embedded map data -- no API key, no backend required
 // Upgrade path: swap answerWithAI() to call Supabase edge function
@@ -750,19 +749,54 @@ function answer(question) {
   var q = question.toLowerCase().trim();
   var zips = Object.keys(t);
 
+  // -- HELP / CAPABILITIES (check first, before anything else) --
+  if (/what.*can you|what.*do you know|what.*question|help|capabilities|how do you work|what.*answer|what.*ask|what.*tell me|how.*use|what.*able/.test(q)) {
+    return '<strong>Here\'s what I can answer for ' + mkt + ':</strong><br><br>' +
+      '<div style="margin-bottom:6px">📍 <strong>Zip lookup</strong> — type any zip code (e.g. "99216") for full demographics, IR score, and opportunity breakdown</div>' +
+      '<div style="margin-bottom:6px">🏆 <strong>Top targets</strong> — "top targets" or "best zips" ranks all zones by IR opportunity score</div>' +
+      '<div style="margin-bottom:6px">🏥 <strong>Medicare</strong> — "Medicare rates" shows highest-density zips</div>' +
+      '<div style="margin-bottom:6px">👴 <strong>Age 55+</strong> — "senior population" or "age 55" shows age concentration</div>' +
+      '<div style="margin-bottom:6px">💰 <strong>Income</strong> — "median income" or "affluent zips" ranks by household income</div>' +
+      '<div style="margin-bottom:6px">🚗 <strong>Drive time</strong> — "drive times" shows proximity of all zips to Peak IR</div>' +
+      '<div style="margin-bottom:6px">⚔️ <strong>Competitors</strong> — "competitors" or "IR groups" lists all competing practices</div>' +
+      '<div style="margin-bottom:6px">🌱 <strong>Growth zones</strong> — "growth zones" explains strategic expansion targets</div>' +
+      '<div style="margin-bottom:6px">⬜ <strong>Underserved</strong> — "uncontested zips" finds areas with zero IR competition</div>' +
+      '<div style="margin-bottom:6px">📊 <strong>Market summary</strong> — "market overview" gives the full picture</div>' +
+      '<div style="margin-bottom:6px">🔢 <strong>Score formula</strong> — "how is score calculated" explains the 100-pt model</div>' +
+      '<div style="margin-bottom:6px">⚖️ <strong>Compare zips</strong> — "compare 99216 and 99037" runs a side-by-side</div>' +
+      '<br><small style="color:rgba(255,255,255,0.4)">Tip: you can also click any zip on the map to see its full data instantly.</small>';
+  }
+
   // -- ZIP LOOKUP --
   var zipRe = /\b(\d{5})\b/;
   var zm = q.match(zipRe);
+
+  // Two-zip comparison (check before single zip)
+  var twoZips = q.match(/(\d{5}).*?(\d{5})/);
+  if (twoZips && t[twoZips[1]] && t[twoZips[2]]) {
+    var z1=twoZips[1], z2=twoZips[2], d1=t[z1], d2=t[z2];
+    var s1=calcScore(d1), s2=calcScore(d2);
+    var html = '<strong>Comparison: ' + z1 + ' vs ' + z2 + '</strong><br><br>';
+    html += statRow('IR Score', s1 + '/100 vs ' + s2 + '/100');
+    html += statRow('Medicare', pct(d1.medicare_rate) + ' vs ' + pct(d2.medicare_rate));
+    html += statRow('Age 55+', pct(d1.age_55_plus_pct) + ' vs ' + pct(d2.age_55_plus_pct));
+    html += statRow('Income', money(d1.median_income) + ' vs ' + money(d2.median_income));
+    html += statRow('IR Comps', (d1.competitors_ir||0) + ' vs ' + (d2.competitors_ir||0));
+    html += statRow('Drive Time', (d1.drive_minutes||0) + ' min vs ' + (d2.drive_minutes||0) + ' min');
+    html += '<br><small style="color:#2ecc71">Winner: ' + (s1>=s2 ? z1 + ' (' + (d1.city||'') + ')' : z2 + ' (' + (d2.city||'') + ')') + ' by ' + Math.abs(s1-s2) + ' pts</small>';
+    return html;
+  }
+
   if (zm && t[zm[1]]) {
     var z = zm[1]; var d = t[z]; var sc = calcScore(d);
-    var html = '<strong>' + z + ' -- ' + (d.city||'') + '</strong><br>';
+    var html = '<strong>' + z + ' — ' + (d.city||'') + '</strong><br>';
     html += '<small style="color:rgba(255,255,255,0.5)">IR Score: <strong style="color:#42A5F5">' + sc + '/100</strong> · ' + tier(sc) + '</small><br><br>';
     html += statRow('Population', (d.population||0).toLocaleString());
     html += statRow('Medicare Rate', pct(d.medicare_rate));
     html += statRow('Age 55+', pct(d.age_55_plus_pct));
     html += statRow('Median Income', money(d.median_income));
     html += statRow('Poverty Rate', pct(d.poverty_rate));
-    html += statRow('Drive Time', (d.drive_minutes||0) + ' min');
+    html += statRow('Drive Time', (d.drive_minutes||0) + ' min from Peak IR');
     html += statRow('IR Competitors', d.competitors_ir || 0);
     html += statRow('IR Opportunity', d.ir_opportunity || 'N/A');
     html += statRow('Active Contract', d.customers ? '✓ Yes' : 'No');
@@ -772,7 +806,7 @@ function answer(question) {
     return 'Zip ' + zm[1] + ' isn\'t in the current ' + mkt + ' map. ' + copyPrompt(question, 'Zip code ' + zm[1] + ' demographics (population, Medicare rate, age 55+, income, competitors)');
   }
 
-  // ── TOP / BEST TARGETS ──
+  // -- TOP / BEST TARGETS --
   if (/best|top|prime|highest score|highest priority|recommend|priorit/.test(q)) {
     var ranked = zips.map(function(z){ return {z:z,s:calcScore(t[z]),d:t[z]}; })
       .sort(function(a,b){return b.s-a.s;}).slice(0,5);
@@ -780,7 +814,41 @@ function answer(question) {
     ranked.forEach(function(r,i){
       html += '<div class="stat-row"><span>' + (i+1) + '. ' + r.z + ' ' + (r.d.city||'') + '</span><span class="stat-val">' + r.s + '/100</span></div>';
     });
-    html += '<br><small style="color:rgba(255,255,255,0.5)">Score = Medicare(30) + Age55+(20) + Competition(15) + Drive(20) + Opportunity(15)</small>';
+    html += '<br><small style="color:rgba(255,255,255,0.5)">Score = Medicare(30) + Age55+(20) + Drive(20) + Competition(15) + Opportunity(15)</small>';
+    return html;
+  }
+
+  // -- IR GROUPS / COMPETITOR COUNT --
+  if (/how many ir|number of ir|count.*ir|ir group|ir specialist|ir practice|ir program|how many.*compet|count.*compet/.test(q)) {
+    var irGroups = comps.filter(function(c){ return c.type === 'IR Group'; });
+    var hospitalIR = comps.filter(function(c){ return c.type === 'Hospital IR'; });
+    var html = '<strong>IR competition in ' + mkt + ':</strong><br><br>';
+    html += statRow('Independent IR groups', irGroups.length);
+    html += statRow('Hospital IR programs', hospitalIR.length);
+    html += statRow('Total IR competitors', comps.length);
+    if (irGroups.length) {
+      html += '<br><small style="color:rgba(255,255,255,0.5)">IR specialist groups:</small><br>';
+      irGroups.forEach(function(c){
+        html += '<div style="margin:4px 0"><strong>' + c.name + '</strong><br>';
+        html += '<small style="color:rgba(255,255,255,0.45)">' + (c.detail||'') + '</small></div>';
+      });
+    }
+    return html;
+  }
+
+  // -- COMPETITORS (general) --
+  if (/competitor|competition|competing|rival|other group|who.*compet|compet.*who|hospital.*ir|imaging center|radiology group|who.*area|practices? in/.test(q)) {
+    if (!comps.length) return 'No competitor data loaded for this market yet.';
+    var html = '<strong>' + comps.length + ' tracked competitors in ' + mkt + ':</strong><br><br>';
+    comps.forEach(function(c){
+      var typeColor = c.type === 'IR Group' ? '#e74c3c' : c.type === 'Hospital IR' ? '#e67e22' : '#9b59b6';
+      html += '<div style="margin-bottom:8px"><strong>' + c.name + '</strong> ';
+      html += '<span style="font-size:10px;background:' + typeColor + '22;color:' + typeColor + ';border:1px solid ' + typeColor + '44;border-radius:3px;padding:1px 5px;">' + (c.type||'') + '</span><br>';
+      html += '<small style="color:rgba(255,255,255,0.5)">' + (c.detail||'') + '</small></div>';
+    });
+    var irGroups = comps.filter(function(c){return c.type==='IR Group';}).length;
+    var hospIR = comps.filter(function(c){return c.type==='Hospital IR';}).length;
+    html += '<small style="color:rgba(255,255,255,0.4)">IR specialist groups: ' + irGroups + ' · Hospital IR programs: ' + hospIR + '</small>';
     return html;
   }
 
@@ -788,7 +856,7 @@ function answer(question) {
   if (/medicare/.test(q)) {
     var ranked = zips.map(function(z){ return {z:z, v:t[z].medicare_rate||0, d:t[z]}; })
       .sort(function(a,b){return b.v-a.v;}).slice(0,6);
-    var html = '<strong>Medicare rates -- ' + mkt + ':</strong><br><br>';
+    var html = '<strong>Medicare rates — ' + mkt + ':</strong><br><br>';
     ranked.forEach(function(r){
       html += statRow(r.z + ' ' + (r.d.city||''), pct(r.v));
     });
@@ -797,11 +865,11 @@ function answer(question) {
     return html;
   }
 
-  // -- AGE --
-  if (/age|55|senior|elder/.test(q)) {
+  // -- AGE / SENIOR --
+  if (/age|55\+?|senior|elder|older/.test(q)) {
     var ranked = zips.map(function(z){ return {z:z, v:t[z].age_55_plus_pct||0, d:t[z]}; })
       .sort(function(a,b){return b.v-a.v;}).slice(0,6);
-    var html = '<strong>Age 55+ concentration -- ' + mkt + ':</strong><br><br>';
+    var html = '<strong>Age 55+ concentration — ' + mkt + ':</strong><br><br>';
     ranked.forEach(function(r){
       html += statRow(r.z + ' ' + (r.d.city||''), pct(r.v));
     });
@@ -809,32 +877,45 @@ function answer(question) {
   }
 
   // -- INCOME --
-  if (/income|affluent|wealth|rich/.test(q)) {
+  if (/income|affluent|wealth|rich|household/.test(q)) {
     var ranked = zips.map(function(z){ return {z:z, v:t[z].median_income||0, d:t[z]}; })
       .sort(function(a,b){return b.v-a.v;}).slice(0,6);
-    var html = '<strong>Median income -- ' + mkt + ':</strong><br><br>';
+    var html = '<strong>Median income — ' + mkt + ':</strong><br><br>';
     ranked.forEach(function(r){
       html += statRow(r.z + ' ' + (r.d.city||''), money(r.v));
     });
     return html;
   }
 
-  // -- COMPETITORS --
-  if (/competitor|competition|competing|rival|other group/.test(q)) {
-    if (!comps.length) return 'No competitor data loaded for this market. ' + copyPrompt(question, 'Competitor list with names, types, locations, and Medicare acceptance');
-    var html = '<strong>' + comps.length + ' competitors in ' + mkt + ':</strong><br><br>';
-    comps.forEach(function(c){
-      html += '<div style="margin-bottom:8px"><strong>' + c.name + '</strong><br>';
-      html += '<small style="color:rgba(255,255,255,0.5)">' + (c.type||'') + ' -- ' + (c.detail||'') + '</small></div>';
+  // -- POPULATION --
+  if (/population|how many people|residents|largest zip|biggest zip/.test(q)) {
+    var ranked = zips.map(function(z){ return {z:z, v:t[z].population||0, d:t[z]}; })
+      .sort(function(a,b){return b.v-a.v;}).slice(0,6);
+    var html = '<strong>Population by zip — ' + mkt + ':</strong><br><br>';
+    ranked.forEach(function(r){
+      html += statRow(r.z + ' ' + (r.d.city||''), (r.v).toLocaleString());
     });
-    var irGroups = comps.filter(function(c){return c.type==='IR Group';}).length;
-    html += '<small style="color:rgba(255,255,255,0.4)">IR specialist groups: ' + irGroups + '</small>';
+    var total = zips.reduce(function(s,z){return s+(t[z].population||0);},0);
+    html += '<br>' + statRow('Total market population', total.toLocaleString());
+    return html;
+  }
+
+  // -- DRIVE TIME --
+  if (/drive|distance|how far|travel|closest|nearest|proximity|commute/.test(q)) {
+    var ranked = zips.map(function(z){ return {z:z, v:t[z].drive_minutes||99, d:t[z]}; })
+      .sort(function(a,b){return a.v-b.v;});
+    var html = '<strong>Drive time from Peak IR — ' + mkt + ':</strong><br><br>';
+    ranked.forEach(function(r){
+      var flag = r.v <= 10 ? ' 🟢' : r.v <= 20 ? ' 🟡' : r.v <= 35 ? ' 🟠' : ' 🔴';
+      html += statRow(r.z + ' ' + (r.d.city||''), r.v + ' min' + flag);
+    });
+    html += '<br><small style="color:rgba(255,255,255,0.4)">🟢 ≤10 min · 🟡 ≤20 · 🟠 ≤35 · 🔴 35+</small>';
     return html;
   }
 
   // -- GROWTH ZONES --
-  if (/growth|zone|expand|expansion|opportunit/.test(q)) {
-    if (!gz.length) return 'No growth zones defined for this market yet. ' + copyPrompt(question, 'Growth zone targets with rationale and coordinates');
+  if (/growth|zone|expand|expansion|strategic|opportunit|target area/.test(q)) {
+    if (!gz.length) return 'No growth zones defined for this market yet.';
     var html = '<strong>' + gz.length + ' growth zones in ' + mkt + ':</strong><br><br>';
     gz.forEach(function(z){
       html += '<div style="margin-bottom:8px"><strong style="color:' + (z.color||'#42A5F5') + '">' + z.name + '</strong><br>';
@@ -844,9 +925,9 @@ function answer(question) {
   }
 
   // -- CONTRACTS --
-  if (/contract|partner|active|current/.test(q)) {
+  if (/contract|partner|active|current site|facility|facilities|signed/.test(q)) {
     if (!ct.length) return 'No active contracts in this market yet.';
-    var html = '<strong>Active contracts -- ' + mkt + ':</strong><br><br>';
+    var html = '<strong>Active contracts — ' + mkt + ':</strong><br><br>';
     ct.forEach(function(c){
       html += '<div style="margin-bottom:6px">✓ <strong>' + c.name + '</strong><br>';
       html += '<small style="color:rgba(255,255,255,0.5)">' + (c.detail||'') + '</small></div>';
@@ -855,74 +936,71 @@ function answer(question) {
   }
 
   // -- SCORE EXPLANATION --
-  if (/score|how.*calculat|formula|metric|weight/.test(q)) {
+  if (/score|how.*calculat|formula|metric|weight|point|rank/.test(q)) {
     return '<strong>IR Opportunity Score (0–100):</strong><br><br>' +
-      statRow('Medicare Rate', '30 pts') +
-      statRow('Age 55+', '20 pts') +
-      statRow('Drive Time from Peak IR', '20 pts') +
-      statRow('IR Competition (fewer = better)', '15 pts') +
-      statRow('IR Procedure Opportunity', '15 pts') +
-      '<br><small style="color:rgba(255,255,255,0.4)">80+ = Prime · 65+ = High Priority · 50+ = Moderate · &lt;50 = Low</small>';
+      statRow('Medicare Rate', '30 pts — highest weight, predicts procedure volume') +
+      statRow('Drive Time from Peak IR', '20 pts — closer = more actionable') +
+      statRow('Age 55+', '20 pts — primary IR patient demographic') +
+      statRow('IR Competition', '15 pts — fewer competitors = better margin') +
+      statRow('IR Procedure Opportunity', '15 pts — procedure volume estimate') +
+      '<br>' +
+      statRow('80–100', 'Prime Target 🔵') +
+      statRow('65–79', 'High Priority 🟢') +
+      statRow('50–64', 'Moderate 🟡') +
+      statRow('< 50', 'Low Priority ⚪');
   }
 
   // -- MARKET SUMMARY --
-  if (/summary|overview|market|total|overall/.test(q)) {
+  if (/summary|overview|market|total|overall|tell me about|describe|what is this/.test(q)) {
     var totalPop = zips.reduce(function(s,z){return s+(t[z].population||0);},0);
     var avgMed = zips.reduce(function(s,z){return s+(t[z].medicare_rate||0);},0)/zips.length;
     var primeCount = zips.filter(function(z){return calcScore(t[z])>=65;}).length;
     var noIR = zips.filter(function(z){return !t[z].competitors_ir;}).length;
+    var topZip = zips.map(function(z){return {z:z,s:calcScore(t[z]),d:t[z]};}).sort(function(a,b){return b.s-a.s;})[0];
     var html = '<strong>' + mkt + ' market overview:</strong><br><br>';
     html += statRow('Total zip zones', zips.length);
     html += statRow('Total population', totalPop.toLocaleString());
     html += statRow('Avg Medicare rate', pct(avgMed));
-    html += statRow('High-priority targets', primeCount + ' zips');
+    html += statRow('High-priority targets (65+)', primeCount + ' zips');
     html += statRow('Zips with zero IR comps', noIR + ' zips');
     html += statRow('Active contracts', ct.length);
-    html += statRow('IR competitors tracked', comps.length);
+    html += statRow('Competitors tracked', comps.length);
+    if (topZip) html += statRow('Top zip', topZip.z + ' ' + (topZip.d.city||'') + ' (' + topZip.s + '/100)');
     return html;
   }
 
-  // ── UNDERSERVED / GAP ──
-  if (/underserv|gap|no competitor|uncontested|white space/.test(q)) {
+  // -- UNDERSERVED / GAP --
+  if (/underserv|gap|no competitor|uncontested|white space|no ir|zero ir|nobody/.test(q)) {
     var gaps = zips.filter(function(z){return !t[z].competitors_ir;})
       .map(function(z){return {z:z,s:calcScore(t[z]),d:t[z]};})
       .sort(function(a,b){return b.s-a.s;}).slice(0,5);
     if (!gaps.length) return 'Every zip in ' + mkt + ' has at least one IR competitor.';
     var html = '<strong>Uncontested zips (zero IR competitors):</strong><br><br>';
     gaps.forEach(function(r){
-      html += statRow(r.z + ' ' + (r.d.city||''), 'Score ' + r.s);
+      html += statRow(r.z + ' ' + (r.d.city||''), 'Score ' + r.s + ' · ' + (r.d.drive_minutes||'?') + ' min drive');
     });
+    html += '<br><small style="color:rgba(255,255,255,0.4)">These zips have NO IR competition — highest barrier-free opportunity.</small>';
     return html;
   }
 
-  // ── POVERTY / MEDICAID ──
-  if (/poverty|medicaid|low.income/.test(q)) {
+  // -- POVERTY / MEDICAID --
+  if (/poverty|medicaid|low.income|underserved pop|social/.test(q)) {
     var ranked = zips.map(function(z){ return {z:z,v:t[z].poverty_rate||0,d:t[z]}; })
       .sort(function(a,b){return b.v-a.v;}).slice(0,6);
-    var html = '<strong>Poverty rates -- ' + mkt + ':</strong><br><br>';
+    var html = '<strong>Poverty rates — ' + mkt + ':</strong><br><br>';
     ranked.forEach(function(r){
       html += statRow(r.z + ' ' + (r.d.city||''), pct(r.v));
     });
     return html;
   }
 
-  // -- COMPARE TWO ZIPS --
-  var twoZips = q.match(/(\d{5}).*?(\d{5})/);
-  if (twoZips && t[twoZips[1]] && t[twoZips[2]]) {
-    var z1=twoZips[1], z2=twoZips[2], d1=t[z1], d2=t[z2];
-    var s1=calcScore(d1), s2=calcScore(d2);
-    var html = '<strong>Comparison: ' + z1 + ' vs ' + z2 + '</strong><br><br>';
-    html += statRow('IR Score', s1 + ' vs ' + s2);
-    html += statRow('Medicare', pct(d1.medicare_rate) + ' vs ' + pct(d2.medicare_rate));
-    html += statRow('Age 55+', pct(d1.age_55_plus_pct) + ' vs ' + pct(d2.age_55_plus_pct));
-    html += statRow('Income', money(d1.median_income) + ' vs ' + money(d2.median_income));
-    html += statRow('IR Comps', (d1.competitors_ir||0) + ' vs ' + (d2.competitors_ir||0));
-    html += '<br><small style="color:#2ecc71">Winner: ' + (s1>=s2 ? z1 : z2) + ' by ' + Math.abs(s1-s2) + ' points</small>';
-    return html;
+  // -- FALLBACK (smart) --
+  // Short/vague questions get a nudge rather than a data request
+  if (q.length < 20) {
+    return 'Not sure what you\'re looking for. Try asking about a specific zip code, "top targets", "competitors", "Medicare rates", "growth zones", or type <strong>help</strong> to see everything I can answer.';
   }
-
-  // -- FALLBACK --
-  return 'I don\'t have that specific data in my knowledge base for ' + mkt + '. ' +
+  return 'I don\'t have a direct match for that in ' + mkt + '. ' +
+    'Try rephrasing — or type <strong>help</strong> to see what I can answer.<br><br>' +
     copyPrompt(question, 'Specific data needed to answer: "' + question + '"');
 }
 
@@ -946,7 +1024,7 @@ function init() {
     <div class="scout-header">
       <div class="scout-avatar">🗺</div>
       <div class="scout-header-text">
-        <div class="scout-name">Scout -- Market AI</div>
+        <div class="scout-name">Scout — Market AI</div>
         <div class="scout-status">● Online · ${mkt}</div>
       </div>
       <button class="scout-close" id="scoutClose">✕</button>
@@ -964,8 +1042,8 @@ function init() {
   var chips = panel.querySelector('#scoutChips');
 
   var suggestions = [
-    'Top targets', 'Best Medicare zips', 'Who are competitors?',
-    'Uncontested zips', 'Growth zones', 'Market summary', 'How is score calculated?'
+    'Help', 'Top targets', 'IR groups', 'Medicare rates',
+    'Uncontested zips', 'Drive times', 'Growth zones', 'Market summary'
   ];
   suggestions.forEach(function(s) {
     var chip = document.createElement('button');
@@ -1011,7 +1089,7 @@ function init() {
     }, 380 + Math.random() * 300);
   }
 
-  addMsg('Hey! I\'m <strong>Scout</strong> -- your AI assistant for the <strong>' + mkt + '</strong> market.<br><br>I can answer questions about any zip code, Medicare density, competitors, growth zones, and IR opportunity scoring. What do you want to know?', 'bot');
+  addMsg('Hey! I\'m <strong>Scout</strong> — your AI assistant for the <strong>' + mkt + '</strong> market.<br><br>Ask me about any zip code, Medicare density, competitors, IR groups, drive times, or growth zones. Type <strong>help</strong> to see everything I can answer.', 'bot');
 
   fab.onclick = function() {
     panel.classList.toggle('open');
