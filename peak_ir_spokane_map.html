@@ -252,7 +252,7 @@ function fillColor(zip) {
   }
   if (currentView === 'income') {
     var v = d.median_income || 0;
-    return v > 75000 ? '#1b5e20' : v > 60000 ? '#2e7d32' : v > 50000 ? '#43a047' : v > 40000 ? '#81c784' : '#c8e6c9';
+    return v > 75000 ? '#e65100' : v > 60000 ? '#f57c00' : v > 50000 ? '#ffa726' : v > 40000 ? '#ffcc80' : '#fff3e0';
   }
   var s = calcScore(d);
   return s >= 80 ? '#1565c0' : s >= 65 ? '#0288d1' : s >= 50 ? '#00897b' : s >= 35 ? '#f9a825' : '#78909c';
@@ -340,7 +340,7 @@ function updateLegend() {
     legend.innerHTML = '<div class="legend-title">Age 55+</div>' +
       items.map(function(i){return '<div class="legend-row"><div class="legend-swatch" style="background:'+i[0]+'"></div><span class="legend-label">'+i[1]+'</span></div>';}).join('');
   } else if (currentView === 'income') {
-    items = [['#1b5e20','> $75K'],['#43a047','$50K–$75K'],['#c8e6c9','< $50K']];
+    items = [['#e65100','> $75K'],['#f57c00','$60K–$75K'],['#ffa726','$50K–$60K'],['#ffcc80','$40K–$50K'],['#fff3e0','< $40K']];
     legend.innerHTML = '<div class="legend-title">Median Income</div>' +
       items.map(function(i){return '<div class="legend-row"><div class="legend-swatch" style="background:'+i[0]+'"></div><span class="legend-label">'+i[1]+'</span></div>';}).join('');
   } else {
