@@ -578,8 +578,8 @@ setView('composite');
 // Scout market context
 window._scoutMarketName = "Portland / Adventist Health";
 window._scoutMarketName = "Portland / Adventist Health";
-// -- REBEL SCOUT CHAT WIDGET --
-// Drop-in JS chat assistant for Rebel Scout IR market maps
+// -- MEDREBEL MARKET INTELLIGENCE WIDGET --
+// Drop-in JS chat assistant for MedRebel IR market maps
 // Reads embedded map data -- no API key, no backend required
 // Upgrade path: swap answerWithAI() to call Supabase edge function
 
@@ -750,7 +750,7 @@ function sourcesFooter(sources) {
 
 function copyPrompt(question, dataNeeded) {
   var mkt = window._scoutMarketName || 'this market';
-  var prompt = '**Data Request -- Rebel Scout / Peak IR ' + mkt + '**\n\nQuestion asked: "' + question + '"\nData needed: ' + dataNeeded + '\n\nPlease add this data to the ' + mkt + ' market configuration so Scout can answer this question.';
+  var prompt = '**Data Request -- MedRebel / ' + mkt + '**\n\nQuestion asked: "' + question + '"\nData needed: ' + dataNeeded + '\n\nPlease add this data to the ' + mkt + ' market configuration so the AI can answer this question.';
   return '<div class="copy-prompt">📋 <strong>Data not in current map.</strong> Copy this prompt to send to MedRebel:<br><em style="font-size:11px;color:rgba(255,255,255,0.6);">' + prompt.replace(/\n/g,'<br>') + '</em><button class="copy-btn" onclick="navigator.clipboard.writeText(unescape(\'' + escape(prompt) + '\')).then(()=>{this.textContent=\'Copied!\';setTimeout(()=>this.textContent=\'Copy Prompt\',2000)})">Copy Prompt</button></div>';
 }
 
@@ -1113,7 +1113,7 @@ function init() {
   var fab = document.createElement('button');
   fab.className = 'scout-fab';
   fab.innerHTML = '🔍<span class="scout-badge"></span>';
-  fab.title = 'Ask Scout';
+  fab.title = 'Ask MedRebel AI';
   document.body.appendChild(fab);
 
   var panel = document.createElement('div');
@@ -1122,7 +1122,7 @@ function init() {
     <div class="scout-header">
       <div class="scout-avatar">🗺</div>
       <div class="scout-header-text">
-        <div class="scout-name">Scout — Market AI</div>
+        <div class="scout-name">MedRebel AI</div>
         <div class="scout-status">● Online · ${mkt}</div>
       </div>
       <button class="scout-close" id="scoutClose">✕</button>
@@ -1130,7 +1130,7 @@ function init() {
     <div class="scout-messages" id="scoutMessages"></div>
     <div class="scout-chips" id="scoutChips"></div>
     <div class="scout-input-row">
-      <input class="scout-input" id="scoutInput" placeholder="Ask about any zip, competitor, or market…" />
+      <input class="scout-input" id="scoutInput" placeholder="Ask about any zip, competitor, strategy, or market…" />
       <button class="scout-send" id="scoutSend">➤</button>
     </div>`;
   document.body.appendChild(panel);
@@ -1188,7 +1188,7 @@ function init() {
     }, 380 + Math.random() * 300);
   }
 
-  addMsg('Hey! I\'m <strong>Scout</strong> — your AI assistant for the <strong>' + mkt + '</strong> market.<br><br>Ask me about any zip code, Medicare density, competitors, IR groups, drive times, or growth zones. Type <strong>help</strong> to see everything I can answer.', 'bot');
+  addMsg('Hey! I\'m <strong>MedRebel AI</strong> — your market intelligence assistant for <strong>' + mkt + '</strong>.<br><br>Ask me about zip codes, Medicare density, competitors, payer mix, CON law, referral sources, or entry strategy. Type <strong>help</strong> to see everything I can answer.', 'bot');
 
   fab.onclick = function() {
     panel.classList.toggle('open');
