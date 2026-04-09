@@ -204,7 +204,7 @@ var competitors = [{"name": "Inland Imaging", "lat": 47.6539, "lon": -117.426, "
 var tracts = [{"lat": 47.655, "lon": -117.42, "pop": 45000, "label": "Central Spokane"}, {"lat": 47.658, "lon": -117.239, "pop": 68000, "label": "Spokane Valley"}, {"lat": 47.71, "lon": -117.414, "pop": 31000, "label": "North Spokane"}, {"lat": 47.625, "lon": -117.397, "pop": 46000, "label": "South Hill"}, {"lat": 47.678, "lon": -116.78, "pop": 51000, "label": "Coeur d'Alene"}, {"lat": 47.718, "lon": -116.951, "pop": 19000, "label": "Post Falls"}, {"lat": 47.668, "lon": -117.085, "pop": 15000, "label": "Liberty Lake"}];
 var growthZones = [{"name": "Spokane Valley Prime", "lat": 47.655, "lon": -117.239, "radius_mi": 5, "color": "#e74c3c", "why": "Peak IR home base \u2014 highest Medicare density, lowest competitor saturation"}, {"name": "Liberty Lake Corridor", "lat": 47.668, "lon": -117.085, "radius_mi": 4, "color": "#f39c12", "why": "Affluent, aging population \u2014 zero IR competitors, high insurance coverage"}, {"name": "Post Falls Expansion", "lat": 47.718, "lon": -116.951, "radius_mi": 4, "color": "#3498db", "why": "Prairie Medical Campus coming '27-'28 \u2014 first-mover advantage"}, {"name": "South Hill Premium", "lat": 47.625, "lon": -117.397, "radius_mi": 3, "color": "#9b59b6", "why": "Highest median income + Medicare rate in metro \u2014 underserved for outpatient IR"}];
 var contracts = [{"name": "MultiCare Deaconess", "lat": 47.6521, "lon": -117.428, "type": "Hospital Partner", "detail": "800 W 5th Ave, Spokane \u2014 Active contract"}, {"name": "OBL Oncology", "lat": 47.659, "lon": -117.235, "type": "OBL Partner", "detail": "Spokane Valley \u2014 Active contract"}, {"name": "MultiCare Yakima", "lat": 46.6021, "lon": -120.5059, "type": "Hospital Partner", "detail": "Yakima, WA \u2014 Active contract"}];
-var marketIntel = {"con_law": "Washington: CON required for new ASC (12-24 month approval process). Idaho (CdA side): NO CON law \u2014 immediate ASC opportunity without regulatory barrier.", "payer_mix_note": "Medicare dominates IR volume (~65%). Commercial ~20%. Medicaid ~15% at WA standard rates \u2014 not a major margin risk here.", "medicaid_risk": "Low \u2014 WA Medicaid reimburses near Medicare rates. Unlike Yakima, payer mix here is favorable.", "key_referral_sources": ["MultiCare Primary Care network (existing contract leverage)", "Providence Medical Group physicians", "North Spokane independent PCPs (underserved corridor)", "Rockwood Clinic employed physicians"], "top_competitor": "Inland Imaging \u2014 120+ total radiologists, only ~8 in IR call pool (NOT a dedicated IR team). Physician-owned, JV with Providence. Appears large but lacks specialized IR depth.", "competitor_moat": "Inland Imaging/Providence JV is entrenched in hospital systems. MultiCare Deaconess (existing Peak IR partner) is secondary. Leverage MultiCare contract to expand referral base into North Spokane.", "strategic_entry": "North Spokane corridor is underserved \u2014 zero IR within 15 min for key zones. Coeur d'Alene (Idaho, 83814) has no CON = fastest ASC path. Differentiate by offering dedicated IR specialists vs. Inland Imaging's call pool model.", "medicare_growth": "Spokane County 65+ population projected to reach 26.28% by 2030 \u2014 growing at 3.3% annually. Strong long-term runway for IR procedure volume.", "ir_physician_comp": "$572,000 average IR physician compensation in Washington State.", "procedure_priorities": ["PAD/CLI treatment", "UFE (Uterine Fibroid Embolization)", "Vertebroplasty/Kyphoplasty", "Dialysis access management", "Hepatic interventions"]};
+var marketIntel = {"con_law": "Washington: CON required for new ASC (12-24 month approval process). Idaho (CdA side): NO CON law \u2014 immediate ASC opportunity without regulatory barrier.", "payer_mix_note": "Medicare dominates IR volume (~65%). Commercial ~20%. Medicaid ~15% at WA standard rates \u2014 not a major margin risk here.", "medicaid_risk": "Low \u2014 WA Medicaid reimburses near Medicare rates. Unlike Yakima, payer mix here is favorable.", "key_referral_sources": ["MultiCare Primary Care network (existing contract leverage)", "Providence Medical Group physicians", "North Spokane independent PCPs (underserved corridor)", "Rockwood Clinic employed physicians"], "top_competitor": "Inland Imaging \u2014 120+ total radiologists, only ~8 in IR call pool (NOT a dedicated IR team). Physician-owned, JV with Providence. Appears large but lacks specialized IR depth.", "competitor_moat": "Inland Imaging/Providence JV is entrenched in hospital systems. MultiCare Deaconess (existing Peak IR partner) is secondary. Leverage MultiCare contract to expand referral base into North Spokane.", "strategic_entry": "North Spokane corridor is underserved \u2014 zero IR within 15 min for key zones. Coeur d'Alene (Idaho, 83814) has no CON = fastest ASC path. Differentiate by offering dedicated IR specialists vs. Inland Imaging's call pool model.", "medicare_growth": "Spokane County 65+ population projected to reach 26.28% by 2030 \u2014 growing at 3.3% annually. Strong long-term runway for IR procedure volume.", "ir_physician_comp": "$572,000 average IR physician compensation in Washington State.", "procedure_priorities": ["PAD/CLI treatment", "UFE (Uterine Fibroid Embolization)", "Vertebroplasty/Kyphoplasty", "Dialysis access management", "Hepatic interventions"], "sources": [{"category": "Regulatory", "label": "WA CON Law \u2014 RCW 70.38", "url": "https://app.leg.wa.gov/rcw/default.aspx?cite=70.38"}, {"category": "Regulatory", "label": "Idaho Code \u2014 No CON Requirement", "url": "https://legislature.idaho.gov/statutesrules/idstat/Title39/T39CH43/"}, {"category": "Medicare", "label": "CMS Geographic Variation PUF (2023)", "url": "https://www.cms.gov/Research-Statistics-Data-and-Systems/Statistics-Trends-and-Reports/Medicare-Geographic-Variation"}, {"category": "Demographics", "label": "US Census ACS 5-Year Estimates (2022)", "url": "https://data.census.gov"}, {"category": "Demographics", "label": "WA OFM Population Projections", "url": "https://ofm.wa.gov/washington-data-research/population-demographics/population-forecasts-and-projections"}, {"category": "Competitor", "label": "Inland Imaging \u2014 inlandimaging.com", "url": "https://www.inlandimaging.com"}, {"category": "Competitor", "label": "MGMA 2023 Physician Compensation Report", "url": "https://www.mgma.com/data/benchmarking-data/mgma-datadive-provider-compensation"}]};
 window._scoutMarketIntel = marketIntel;
 
 // -- MAP INIT --
@@ -736,6 +736,18 @@ function statRow(label, val) {
   return '<div class="stat-row"><span>' + label + '</span><span class="stat-val">' + val + '</span></div>';
 }
 
+function sourcesFooter(sources) {
+  if (!sources || !sources.length) return '';
+  return '<div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.1);">' +
+    '<small style="color:rgba(255,255,255,0.32);font-size:10px;">📚 <strong style="color:rgba(255,255,255,0.45)">Sources:</strong> ' +
+    sources.map(function(s) {
+      return s.url
+        ? '<a href="' + s.url + '" target="_blank" style="color:rgba(66,165,245,0.55);text-decoration:none;">' + s.label + '</a>'
+        : '<span>' + s.label + '</span>';
+    }).join(' · ') +
+    '</small></div>';
+}
+
 function copyPrompt(question, dataNeeded) {
   var mkt = window._scoutMarketName || 'this market';
   var prompt = '**Data Request -- Rebel Scout / Peak IR ' + mkt + '**\n\nQuestion asked: "' + question + '"\nData needed: ' + dataNeeded + '\n\nPlease add this data to the ' + mkt + ' market configuration so Scout can answer this question.';
@@ -813,6 +825,20 @@ function answer(question) {
     return 'Zip ' + zm[1] + ' isn\'t in the current ' + mkt + ' map. ' + copyPrompt(question, 'Zip code ' + zm[1] + ' demographics (population, Medicare rate, age 55+, income, competitors)');
   }
 
+  // -- PROCEDURE PRIORITIES (must come before TOP TARGETS — "prioritize" would match there) --
+  if (/procedure|pad|ufe|fibroid|vertebro|kyphoplasty|dialysis|hepatic|port|vascular|what.*treat|what.*perform|what.*service|service.*offer|emboliz|ablat/.test(q)) {
+    if (!mi.procedure_priorities || !mi.procedure_priorities.length) return 'No procedure priority data loaded for this market yet.';
+    var html = '<strong>Procedure priorities — ' + mkt + ':</strong><br><br>';
+    mi.procedure_priorities.forEach(function(p, i) {
+      html += '<div style="margin-bottom:4px"><span style="color:#42A5F5;font-weight:700;">' + (i+1) + '.</span> ' + p + '</div>';
+    });
+    if (mi.medicaid_demographic_note) {
+      html += '<br><div style="font-size:11px;color:rgba(255,255,255,0.5);padding:6px 8px;background:rgba(255,255,255,0.04);border-radius:4px;">' + mi.medicaid_demographic_note + '</div>';
+    }
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources);
+    return html;
+  }
+
   // -- TOP / BEST TARGETS --
   if (/best|top|prime|highest score|highest priority|recommend|priorit/.test(q)) {
     var ranked = zips.map(function(z){ return {z:z,s:calcScore(t[z]),d:t[z]}; })
@@ -840,6 +866,7 @@ function answer(question) {
         html += '<small style="color:rgba(255,255,255,0.45)">' + (c.detail||'') + '</small></div>';
       });
     }
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources.filter(function(s){ return s.category === 'Competitor'; }));
     return html;
   }
 
@@ -856,6 +883,7 @@ function answer(question) {
     var irGroups = comps.filter(function(c){return c.type==='IR Group';}).length;
     var hospIR = comps.filter(function(c){return c.type==='Hospital IR';}).length;
     html += '<small style="color:rgba(255,255,255,0.4)">IR specialist groups: ' + irGroups + ' · Hospital IR programs: ' + hospIR + '</small>';
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources.filter(function(s){ return s.category === 'Competitor'; }));
     return html;
   }
 
@@ -999,6 +1027,7 @@ function answer(question) {
     var html = '<strong>Regulatory / CON Law — ' + mkt + ':</strong><br><br>';
     html += '<div style="margin-bottom:8px">' + mi.con_law + '</div>';
     if (mi.medicaid_risk) html += '<br>' + statRow('Medicaid risk', mi.medicaid_risk);
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources.filter(function(s){ return s.category === 'Regulatory'; }));
     return html;
   }
 
@@ -1011,6 +1040,7 @@ function answer(question) {
       html += '<br><div style="padding:8px;background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.3);border-radius:6px;font-size:11px;">';
       html += '⚠️ <strong>Medicaid Risk:</strong> ' + mi.medicaid_risk + '</div>';
     }
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources.filter(function(s){ return s.category === 'Payer Mix' || s.category === 'Demographics'; }));
     return html;
   }
 
@@ -1022,19 +1052,7 @@ function answer(question) {
       html += '<div style="margin-bottom:6px">📍 ' + r + '</div>';
     });
     if (mi.strategic_entry) html += '<br><small style="color:rgba(255,255,255,0.5)">' + mi.strategic_entry + '</small>';
-    return html;
-  }
-
-  // -- PROCEDURE PRIORITIES --
-  if (/procedure|pad|ufe|fibroid|vertebro|kyphoplasty|dialysis|hepatic|port|vascular|what.*treat|what.*perform|what.*service|service.*offer|emboliz|ablat/.test(q)) {
-    if (!mi.procedure_priorities || !mi.procedure_priorities.length) return 'No procedure priority data loaded for this market yet.';
-    var html = '<strong>Procedure priorities — ' + mkt + ':</strong><br><br>';
-    mi.procedure_priorities.forEach(function(p, i) {
-      html += '<div style="margin-bottom:4px"><span style="color:#42A5F5;font-weight:700;">' + (i+1) + '.</span> ' + p + '</div>';
-    });
-    if (mi.medicaid_demographic_note) {
-      html += '<br><div style="font-size:11px;color:rgba(255,255,255,0.5);padding:6px 8px;background:rgba(255,255,255,0.04);border-radius:4px;">' + mi.medicaid_demographic_note + '</div>';
-    }
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources.filter(function(s){ return s.category === 'Referral' || s.category === 'Competitor'; }));
     return html;
   }
 
@@ -1046,6 +1064,7 @@ function answer(question) {
     if (mi.strategic_entry) html += '<br><div style="margin-bottom:8px">🎯 <strong>Strategic entry:</strong> ' + mi.strategic_entry + '</div>';
     if (mi.acquisition_target) html += '<br><div style="padding:8px;background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.3);border-radius:6px;font-size:11px;">💡 <strong>Acquisition target:</strong> ' + mi.acquisition_target + '</div>';
     if (mi.ohsu_legacy_update) html += '<br><div style="font-size:11px;color:rgba(255,255,255,0.5);">📰 ' + mi.ohsu_legacy_update + '</div>';
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources.filter(function(s){ return s.category === 'Demographics' || s.category === 'Medicare'; }));
     return html;
   }
 
@@ -1058,6 +1077,7 @@ function answer(question) {
     if (mi.competitor_moat) html += '<br><div style="font-size:11px;color:rgba(255,255,255,0.5);">🛡 <strong>Competitive moat:</strong> ' + mi.competitor_moat + '</div>';
     if (mi.con_law) html += '<br><div style="font-size:11px;color:rgba(255,255,255,0.5);">⚖️ <strong>Regulatory:</strong> ' + mi.con_law + '</div>';
     if (mi.acquisition_target) html += '<br><div style="padding:8px;background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.3);border-radius:6px;font-size:11px;">💡 <strong>Top recommendation:</strong> ' + mi.acquisition_target + '</div>';
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources.filter(function(s){ return s.category === 'Competitor' || s.category === 'Regulatory'; }));
     return html;
   }
 

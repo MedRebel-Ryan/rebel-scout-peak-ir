@@ -204,7 +204,7 @@ var competitors = [{"name": "Samaritan Health - Good Samaritan", "lat": 44.5646,
 var tracts = [{"lat": 44.5646, "lon": -123.262, "pop": 32840, "label": "Corvallis North"}, {"lat": 44.556, "lon": -123.274, "pop": 14260, "label": "Corvallis SW"}, {"lat": 44.6365, "lon": -123.1059, "pop": 41600, "label": "Albany"}, {"lat": 44.538, "lon": -123.356, "pop": 12300, "label": "Philomath"}, {"lat": 44.537, "lon": -122.907, "pop": 16800, "label": "Lebanon"}];
 var growthZones = [{"name": "Corvallis SW Premium", "lat": 44.538, "lon": -123.29, "radius_mi": 3, "color": "#e74c3c", "why": "Highest Medicare + age 55+ in metro \u2014 zero IR competitors, high-income surgical candidates"}, {"name": "Albany Expansion", "lat": 44.6365, "lon": -123.1059, "radius_mi": 4, "color": "#f39c12", "why": "41,600 population with 30%+ age 55+ \u2014 Samaritan has limited IR, significant gap"}, {"name": "Lebanon / Santiam Corridor", "lat": 44.537, "lon": -122.907, "radius_mi": 4, "color": "#3498db", "why": "Rural underserved \u2014 nearest IR is 30+ min, aging population with no outpatient IR option"}];
 var contracts = [{"name": "Good Samaritan Regional Medical", "lat": 44.5646, "lon": -123.262, "type": "Hospital Partner", "detail": "Corvallis, OR \u2014 Target contract for Peak IR partnership"}];
-var marketIntel = {"con_law": "Oregon HAS a CON law \u2014 new healthcare facility requires Certificate of Need approval. Constrains independent ASC greenfield expansion.", "payer_mix_note": "Medicare ~58%, Medicaid (Oregon Health Plan) ~22%, Commercial ~20%. Best payer mix of the Oregon markets. OSU/university population skews younger in Corvallis core zips.", "medicaid_risk": "Moderate \u2014 OR Medicaid (Oregon Health Plan) reimburses at reduced rates, but 58% Medicare concentration overall makes this market economically viable.", "key_referral_sources": ["Corvallis Clinic physicians (NOW Optum/UnitedHealth since March 2024 \u2014 referral access may be restricted)", "Samaritan Health PCPs", "Albany General PCPs and specialists", "OHSU-affiliated community physicians in mid-valley"], "top_competitor": "Samaritan Health Services \u2014 dominant system with >1,000 IR procedures/year. Acquiring MultiCare affiliation closing mid-2026 \u2014 disruption window opening.", "competitor_moat": "Samaritan controls the dominant hospital IR volume. Corvallis Clinic locked by Optum/UnitedHealth (March 2024 acquisition) \u2014 traditional referral flows restricted. Corvallis Radiology PC is the only independent IR group.", "acquisition_target": "Corvallis Radiology PC \u2014 4 fellowship-trained IR radiologists, independent, the ONLY non-hospital IR in the market. Preferred entry vehicle. Acquisition avoids CON and instantly creates a market position.", "strategic_entry": "RECOMMENDED: Acquire or partner with Corvallis Radiology PC. Act before Samaritan/MultiCare consolidation closes mid-2026. Disruption window is open NOW \u2014 Samaritan leadership focused on merger logistics, not competitive defense.", "medicare_growth": "Benton County 65+ population growing steadily. OSU retirees and Willamette Valley migration driving demand for premium outpatient IR services.", "procedure_priorities": ["PAD/CLI treatment", "UFE (underserved in mid-Willamette Valley)", "Vertebroplasty/Kyphoplasty (high 65+ concentration in Albany/Lebanon)", "Oncologic interventions (embolization, ablation)"]};
+var marketIntel = {"con_law": "Oregon HAS a CON law \u2014 new healthcare facility requires Certificate of Need approval. Constrains independent ASC greenfield expansion.", "payer_mix_note": "Medicare ~58%, Medicaid (Oregon Health Plan) ~22%, Commercial ~20%. Best payer mix of the Oregon markets. OSU/university population skews younger in Corvallis core zips.", "medicaid_risk": "Moderate \u2014 OR Medicaid (Oregon Health Plan) reimburses at reduced rates, but 58% Medicare concentration overall makes this market economically viable.", "key_referral_sources": ["Corvallis Clinic physicians (NOW Optum/UnitedHealth since March 2024 \u2014 referral access may be restricted)", "Samaritan Health PCPs", "Albany General PCPs and specialists", "OHSU-affiliated community physicians in mid-valley"], "top_competitor": "Samaritan Health Services \u2014 dominant system with >1,000 IR procedures/year. Acquiring MultiCare affiliation closing mid-2026 \u2014 disruption window opening.", "competitor_moat": "Samaritan controls the dominant hospital IR volume. Corvallis Clinic locked by Optum/UnitedHealth (March 2024 acquisition) \u2014 traditional referral flows restricted. Corvallis Radiology PC is the only independent IR group.", "acquisition_target": "Corvallis Radiology PC \u2014 4 fellowship-trained IR radiologists, independent, the ONLY non-hospital IR in the market. Preferred entry vehicle. Acquisition avoids CON and instantly creates a market position.", "strategic_entry": "RECOMMENDED: Acquire or partner with Corvallis Radiology PC. Act before Samaritan/MultiCare consolidation closes mid-2026. Disruption window is open NOW \u2014 Samaritan leadership focused on merger logistics, not competitive defense.", "medicare_growth": "Benton County 65+ population growing steadily. OSU retirees and Willamette Valley migration driving demand for premium outpatient IR services.", "procedure_priorities": ["PAD/CLI treatment", "UFE (underserved in mid-Willamette Valley)", "Vertebroplasty/Kyphoplasty (high 65+ concentration in Albany/Lebanon)", "Oncologic interventions (embolization, ablation)"], "sources": [{"category": "Regulatory", "label": "OR CON Law \u2014 ORS 441.015", "url": "https://www.oregonlegislature.gov/bills_laws/ors/ors441.html"}, {"category": "Competitor", "label": "Samaritan Health Services \u2014 samhealth.org", "url": "https://www.samhealth.org"}, {"category": "Competitor", "label": "Corvallis Radiology PC \u2014 Oregon Medical Board", "url": "https://www.oregon.gov/omb/pages/index.aspx"}, {"category": "Competitor", "label": "Samaritan-MultiCare Merger \u2014 Portland Business Journal", "url": "https://www.bizjournals.com/portland"}, {"category": "Referral", "label": "Corvallis Clinic / Optum Acquisition \u2014 March 2024", "url": "https://www.corvallisclinic.com"}, {"category": "Demographics", "label": "US Census ACS 5-Year Estimates (2022)", "url": "https://data.census.gov"}, {"category": "Medicare", "label": "CMS Geographic Variation PUF (2023)", "url": "https://www.cms.gov/Research-Statistics-Data-and-Systems/Statistics-Trends-and-Reports/Medicare-Geographic-Variation"}]};
 window._scoutMarketIntel = marketIntel;
 
 // -- MAP INIT --
@@ -736,6 +736,18 @@ function statRow(label, val) {
   return '<div class="stat-row"><span>' + label + '</span><span class="stat-val">' + val + '</span></div>';
 }
 
+function sourcesFooter(sources) {
+  if (!sources || !sources.length) return '';
+  return '<div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.1);">' +
+    '<small style="color:rgba(255,255,255,0.32);font-size:10px;">📚 <strong style="color:rgba(255,255,255,0.45)">Sources:</strong> ' +
+    sources.map(function(s) {
+      return s.url
+        ? '<a href="' + s.url + '" target="_blank" style="color:rgba(66,165,245,0.55);text-decoration:none;">' + s.label + '</a>'
+        : '<span>' + s.label + '</span>';
+    }).join(' · ') +
+    '</small></div>';
+}
+
 function copyPrompt(question, dataNeeded) {
   var mkt = window._scoutMarketName || 'this market';
   var prompt = '**Data Request -- Rebel Scout / Peak IR ' + mkt + '**\n\nQuestion asked: "' + question + '"\nData needed: ' + dataNeeded + '\n\nPlease add this data to the ' + mkt + ' market configuration so Scout can answer this question.';
@@ -813,6 +825,20 @@ function answer(question) {
     return 'Zip ' + zm[1] + ' isn\'t in the current ' + mkt + ' map. ' + copyPrompt(question, 'Zip code ' + zm[1] + ' demographics (population, Medicare rate, age 55+, income, competitors)');
   }
 
+  // -- PROCEDURE PRIORITIES (must come before TOP TARGETS — "prioritize" would match there) --
+  if (/procedure|pad|ufe|fibroid|vertebro|kyphoplasty|dialysis|hepatic|port|vascular|what.*treat|what.*perform|what.*service|service.*offer|emboliz|ablat/.test(q)) {
+    if (!mi.procedure_priorities || !mi.procedure_priorities.length) return 'No procedure priority data loaded for this market yet.';
+    var html = '<strong>Procedure priorities — ' + mkt + ':</strong><br><br>';
+    mi.procedure_priorities.forEach(function(p, i) {
+      html += '<div style="margin-bottom:4px"><span style="color:#42A5F5;font-weight:700;">' + (i+1) + '.</span> ' + p + '</div>';
+    });
+    if (mi.medicaid_demographic_note) {
+      html += '<br><div style="font-size:11px;color:rgba(255,255,255,0.5);padding:6px 8px;background:rgba(255,255,255,0.04);border-radius:4px;">' + mi.medicaid_demographic_note + '</div>';
+    }
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources);
+    return html;
+  }
+
   // -- TOP / BEST TARGETS --
   if (/best|top|prime|highest score|highest priority|recommend|priorit/.test(q)) {
     var ranked = zips.map(function(z){ return {z:z,s:calcScore(t[z]),d:t[z]}; })
@@ -840,6 +866,7 @@ function answer(question) {
         html += '<small style="color:rgba(255,255,255,0.45)">' + (c.detail||'') + '</small></div>';
       });
     }
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources.filter(function(s){ return s.category === 'Competitor'; }));
     return html;
   }
 
@@ -856,6 +883,7 @@ function answer(question) {
     var irGroups = comps.filter(function(c){return c.type==='IR Group';}).length;
     var hospIR = comps.filter(function(c){return c.type==='Hospital IR';}).length;
     html += '<small style="color:rgba(255,255,255,0.4)">IR specialist groups: ' + irGroups + ' · Hospital IR programs: ' + hospIR + '</small>';
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources.filter(function(s){ return s.category === 'Competitor'; }));
     return html;
   }
 
@@ -999,6 +1027,7 @@ function answer(question) {
     var html = '<strong>Regulatory / CON Law — ' + mkt + ':</strong><br><br>';
     html += '<div style="margin-bottom:8px">' + mi.con_law + '</div>';
     if (mi.medicaid_risk) html += '<br>' + statRow('Medicaid risk', mi.medicaid_risk);
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources.filter(function(s){ return s.category === 'Regulatory'; }));
     return html;
   }
 
@@ -1011,6 +1040,7 @@ function answer(question) {
       html += '<br><div style="padding:8px;background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.3);border-radius:6px;font-size:11px;">';
       html += '⚠️ <strong>Medicaid Risk:</strong> ' + mi.medicaid_risk + '</div>';
     }
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources.filter(function(s){ return s.category === 'Payer Mix' || s.category === 'Demographics'; }));
     return html;
   }
 
@@ -1022,19 +1052,7 @@ function answer(question) {
       html += '<div style="margin-bottom:6px">📍 ' + r + '</div>';
     });
     if (mi.strategic_entry) html += '<br><small style="color:rgba(255,255,255,0.5)">' + mi.strategic_entry + '</small>';
-    return html;
-  }
-
-  // -- PROCEDURE PRIORITIES --
-  if (/procedure|pad|ufe|fibroid|vertebro|kyphoplasty|dialysis|hepatic|port|vascular|what.*treat|what.*perform|what.*service|service.*offer|emboliz|ablat/.test(q)) {
-    if (!mi.procedure_priorities || !mi.procedure_priorities.length) return 'No procedure priority data loaded for this market yet.';
-    var html = '<strong>Procedure priorities — ' + mkt + ':</strong><br><br>';
-    mi.procedure_priorities.forEach(function(p, i) {
-      html += '<div style="margin-bottom:4px"><span style="color:#42A5F5;font-weight:700;">' + (i+1) + '.</span> ' + p + '</div>';
-    });
-    if (mi.medicaid_demographic_note) {
-      html += '<br><div style="font-size:11px;color:rgba(255,255,255,0.5);padding:6px 8px;background:rgba(255,255,255,0.04);border-radius:4px;">' + mi.medicaid_demographic_note + '</div>';
-    }
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources.filter(function(s){ return s.category === 'Referral' || s.category === 'Competitor'; }));
     return html;
   }
 
@@ -1046,6 +1064,7 @@ function answer(question) {
     if (mi.strategic_entry) html += '<br><div style="margin-bottom:8px">🎯 <strong>Strategic entry:</strong> ' + mi.strategic_entry + '</div>';
     if (mi.acquisition_target) html += '<br><div style="padding:8px;background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.3);border-radius:6px;font-size:11px;">💡 <strong>Acquisition target:</strong> ' + mi.acquisition_target + '</div>';
     if (mi.ohsu_legacy_update) html += '<br><div style="font-size:11px;color:rgba(255,255,255,0.5);">📰 ' + mi.ohsu_legacy_update + '</div>';
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources.filter(function(s){ return s.category === 'Demographics' || s.category === 'Medicare'; }));
     return html;
   }
 
@@ -1058,6 +1077,7 @@ function answer(question) {
     if (mi.competitor_moat) html += '<br><div style="font-size:11px;color:rgba(255,255,255,0.5);">🛡 <strong>Competitive moat:</strong> ' + mi.competitor_moat + '</div>';
     if (mi.con_law) html += '<br><div style="font-size:11px;color:rgba(255,255,255,0.5);">⚖️ <strong>Regulatory:</strong> ' + mi.con_law + '</div>';
     if (mi.acquisition_target) html += '<br><div style="padding:8px;background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.3);border-radius:6px;font-size:11px;">💡 <strong>Top recommendation:</strong> ' + mi.acquisition_target + '</div>';
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources.filter(function(s){ return s.category === 'Competitor' || s.category === 'Regulatory'; }));
     return html;
   }
 

@@ -204,7 +204,7 @@ var competitors = [{"name": "MultiCare Yakima Memorial", "lat": 46.6021, "lon": 
 var tracts = [{"lat": 46.6021, "lon": -120.5059, "pop": 31366, "label": "Yakima Core"}, {"lat": 46.631, "lon": -120.485, "pop": 46492, "label": "Yakima North"}, {"lat": 46.57, "lon": -120.58, "pop": 38060, "label": "West Valley"}, {"lat": 46.386, "lon": -119.969, "pop": 22817, "label": "Sunnyside"}, {"lat": 46.251, "lon": -119.881, "pop": 15730, "label": "Grandview"}, {"lat": 46.66, "lon": -120.52, "pop": 7166, "label": "Selah"}, {"lat": 46.73, "lon": -120.51, "pop": 18871, "label": "Naches"}];
 var growthZones = [{"name": "West Valley Prime", "lat": 46.582, "lon": -120.545, "radius_mi": 4, "color": "#e74c3c", "why": "Highest Medicare rate + zero IR competitors \u2014 ideal outpatient IR expansion zone"}, {"name": "Selah Corridor", "lat": 46.66, "lon": -120.52, "radius_mi": 3, "color": "#f39c12", "why": "Affluent aging demographic \u2014 no IR within 20 min, high surgical candidate density"}, {"name": "Lower Valley Expansion", "lat": 46.32, "lon": -119.93, "radius_mi": 5, "color": "#3498db", "why": "Grandview/Sunnyside corridor \u2014 underserved, zero IR, growing Hispanic Medicare population"}];
 var contracts = [{"name": "MultiCare Yakima Memorial", "lat": 46.6021, "lon": -120.5059, "type": "Hospital Partner", "detail": "Yakima, WA \u2014 Active Peak IR contract"}];
-var marketIntel = {"con_law": "Washington has CON law \u2014 new ASC requires Certificate of Need approval (12-24 month process). Must partner with an existing licensed facility or pursue CON directly.", "payer_mix_note": "CRITICAL RISK: ~50% Medicaid across Yakima County, reimbursing at 55-60 cents on the Medicare dollar. Medicare ~35%, Commercial ~15%. This is the most challenging payer mix of the 4 Peak IR markets.", "medicaid_risk": "High \u2014 majority payer is Medicaid at severely reduced rates. IR margin is compressed. Marketing must be laser-focused on Medicare-eligible patients (65+) to protect economics.", "key_referral_sources": ["Yakima Valley Farm Workers Clinic (195K patients, 64% Hispanic \u2014 priority PAD screening target)", "Astria Health employed PCPs", "Valley Medical Group physicians", "Yakima Neighborhood Health Services"], "top_competitor": "Astria Health \u2014 hospital-employed IR. No independent IR ASC exists anywhere in Yakima Valley. MultiCare Yakima Memorial (existing Peak IR partner) is the dominant hospital.", "competitor_moat": "No independent IR competition exists \u2014 but hospital-employed IR means referrals stay captive to Astria. Must build independent physician referral relationships outside the Astria network.", "strategic_entry": "Focus exclusively on Medicare-eligible patients (35% of market). West Valley (98908) and Selah (98953) are highest-income, lowest-poverty, zero-competition zones \u2014 start here. Farm Workers Clinic is a PAD screening pipeline for the Hispanic population.", "medicaid_demographic_note": "50% Hispanic/Latino (predominantly Mexican-American). Mexican-American patients have LOWER PAD prevalence than African-American or non-Hispanic White populations \u2014 adjust procedure volume expectations accordingly.", "medicare_growth": "Yakima County Medicare growth is slower than statewide WA average due to the younger demographic mix. Weakest long-term Medicare runway of the 4 markets.", "procedure_priorities": ["PAD/CLI (target Medicare-eligible 65+ population)", "UFE", "Vertebroplasty/Kyphoplasty", "Dialysis access management"]};
+var marketIntel = {"con_law": "Washington has CON law \u2014 new ASC requires Certificate of Need approval (12-24 month process). Must partner with an existing licensed facility or pursue CON directly.", "payer_mix_note": "CRITICAL RISK: ~50% Medicaid across Yakima County, reimbursing at 55-60 cents on the Medicare dollar. Medicare ~35%, Commercial ~15%. This is the most challenging payer mix of the 4 Peak IR markets.", "medicaid_risk": "High \u2014 majority payer is Medicaid at severely reduced rates. IR margin is compressed. Marketing must be laser-focused on Medicare-eligible patients (65+) to protect economics.", "key_referral_sources": ["Yakima Valley Farm Workers Clinic (195K patients, 64% Hispanic \u2014 priority PAD screening target)", "Astria Health employed PCPs", "Valley Medical Group physicians", "Yakima Neighborhood Health Services"], "top_competitor": "Astria Health \u2014 hospital-employed IR. No independent IR ASC exists anywhere in Yakima Valley. MultiCare Yakima Memorial (existing Peak IR partner) is the dominant hospital.", "competitor_moat": "No independent IR competition exists \u2014 but hospital-employed IR means referrals stay captive to Astria. Must build independent physician referral relationships outside the Astria network.", "strategic_entry": "Focus exclusively on Medicare-eligible patients (35% of market). West Valley (98908) and Selah (98953) are highest-income, lowest-poverty, zero-competition zones \u2014 start here. Farm Workers Clinic is a PAD screening pipeline for the Hispanic population.", "medicaid_demographic_note": "50% Hispanic/Latino (predominantly Mexican-American). Mexican-American patients have LOWER PAD prevalence than African-American or non-Hispanic White populations \u2014 adjust procedure volume expectations accordingly.", "medicare_growth": "Yakima County Medicare growth is slower than statewide WA average due to the younger demographic mix. Weakest long-term Medicare runway of the 4 markets.", "procedure_priorities": ["PAD/CLI (target Medicare-eligible 65+ population)", "UFE", "Vertebroplasty/Kyphoplasty", "Dialysis access management"], "sources": [{"category": "Regulatory", "label": "WA CON Law \u2014 RCW 70.38", "url": "https://app.leg.wa.gov/rcw/default.aspx?cite=70.38"}, {"category": "Payer Mix", "label": "WA DSHS Medicaid Managed Care Data", "url": "https://www.hca.wa.gov/about-hca/data-and-reports"}, {"category": "Payer Mix", "label": "Yakima County Health Assessment 2023", "url": "https://www.yakimacounty.us/1195/Community-Health"}, {"category": "Demographics", "label": "US Census ACS 5-Year Estimates (2022)", "url": "https://data.census.gov"}, {"category": "Referral", "label": "Yakima Valley Farm Workers Clinic \u2014 yvfwc.com", "url": "https://www.yvfwc.com"}, {"category": "Competitor", "label": "Astria Health \u2014 astriahealth.com", "url": "https://www.astriahealth.com"}, {"category": "Medicare", "label": "CMS State/County Medicare Enrollment (2023)", "url": "https://www.cms.gov/Research-Statistics-Data-and-Systems/Statistics-Trends-and-Reports/Medicare-Geographic-Variation"}]};
 window._scoutMarketIntel = marketIntel;
 
 // -- MAP INIT --
@@ -736,6 +736,18 @@ function statRow(label, val) {
   return '<div class="stat-row"><span>' + label + '</span><span class="stat-val">' + val + '</span></div>';
 }
 
+function sourcesFooter(sources) {
+  if (!sources || !sources.length) return '';
+  return '<div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.1);">' +
+    '<small style="color:rgba(255,255,255,0.32);font-size:10px;">📚 <strong style="color:rgba(255,255,255,0.45)">Sources:</strong> ' +
+    sources.map(function(s) {
+      return s.url
+        ? '<a href="' + s.url + '" target="_blank" style="color:rgba(66,165,245,0.55);text-decoration:none;">' + s.label + '</a>'
+        : '<span>' + s.label + '</span>';
+    }).join(' · ') +
+    '</small></div>';
+}
+
 function copyPrompt(question, dataNeeded) {
   var mkt = window._scoutMarketName || 'this market';
   var prompt = '**Data Request -- Rebel Scout / Peak IR ' + mkt + '**\n\nQuestion asked: "' + question + '"\nData needed: ' + dataNeeded + '\n\nPlease add this data to the ' + mkt + ' market configuration so Scout can answer this question.';
@@ -813,6 +825,20 @@ function answer(question) {
     return 'Zip ' + zm[1] + ' isn\'t in the current ' + mkt + ' map. ' + copyPrompt(question, 'Zip code ' + zm[1] + ' demographics (population, Medicare rate, age 55+, income, competitors)');
   }
 
+  // -- PROCEDURE PRIORITIES (must come before TOP TARGETS — "prioritize" would match there) --
+  if (/procedure|pad|ufe|fibroid|vertebro|kyphoplasty|dialysis|hepatic|port|vascular|what.*treat|what.*perform|what.*service|service.*offer|emboliz|ablat/.test(q)) {
+    if (!mi.procedure_priorities || !mi.procedure_priorities.length) return 'No procedure priority data loaded for this market yet.';
+    var html = '<strong>Procedure priorities — ' + mkt + ':</strong><br><br>';
+    mi.procedure_priorities.forEach(function(p, i) {
+      html += '<div style="margin-bottom:4px"><span style="color:#42A5F5;font-weight:700;">' + (i+1) + '.</span> ' + p + '</div>';
+    });
+    if (mi.medicaid_demographic_note) {
+      html += '<br><div style="font-size:11px;color:rgba(255,255,255,0.5);padding:6px 8px;background:rgba(255,255,255,0.04);border-radius:4px;">' + mi.medicaid_demographic_note + '</div>';
+    }
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources);
+    return html;
+  }
+
   // -- TOP / BEST TARGETS --
   if (/best|top|prime|highest score|highest priority|recommend|priorit/.test(q)) {
     var ranked = zips.map(function(z){ return {z:z,s:calcScore(t[z]),d:t[z]}; })
@@ -840,6 +866,7 @@ function answer(question) {
         html += '<small style="color:rgba(255,255,255,0.45)">' + (c.detail||'') + '</small></div>';
       });
     }
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources.filter(function(s){ return s.category === 'Competitor'; }));
     return html;
   }
 
@@ -856,6 +883,7 @@ function answer(question) {
     var irGroups = comps.filter(function(c){return c.type==='IR Group';}).length;
     var hospIR = comps.filter(function(c){return c.type==='Hospital IR';}).length;
     html += '<small style="color:rgba(255,255,255,0.4)">IR specialist groups: ' + irGroups + ' · Hospital IR programs: ' + hospIR + '</small>';
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources.filter(function(s){ return s.category === 'Competitor'; }));
     return html;
   }
 
@@ -999,6 +1027,7 @@ function answer(question) {
     var html = '<strong>Regulatory / CON Law — ' + mkt + ':</strong><br><br>';
     html += '<div style="margin-bottom:8px">' + mi.con_law + '</div>';
     if (mi.medicaid_risk) html += '<br>' + statRow('Medicaid risk', mi.medicaid_risk);
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources.filter(function(s){ return s.category === 'Regulatory'; }));
     return html;
   }
 
@@ -1011,6 +1040,7 @@ function answer(question) {
       html += '<br><div style="padding:8px;background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.3);border-radius:6px;font-size:11px;">';
       html += '⚠️ <strong>Medicaid Risk:</strong> ' + mi.medicaid_risk + '</div>';
     }
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources.filter(function(s){ return s.category === 'Payer Mix' || s.category === 'Demographics'; }));
     return html;
   }
 
@@ -1022,19 +1052,7 @@ function answer(question) {
       html += '<div style="margin-bottom:6px">📍 ' + r + '</div>';
     });
     if (mi.strategic_entry) html += '<br><small style="color:rgba(255,255,255,0.5)">' + mi.strategic_entry + '</small>';
-    return html;
-  }
-
-  // -- PROCEDURE PRIORITIES --
-  if (/procedure|pad|ufe|fibroid|vertebro|kyphoplasty|dialysis|hepatic|port|vascular|what.*treat|what.*perform|what.*service|service.*offer|emboliz|ablat/.test(q)) {
-    if (!mi.procedure_priorities || !mi.procedure_priorities.length) return 'No procedure priority data loaded for this market yet.';
-    var html = '<strong>Procedure priorities — ' + mkt + ':</strong><br><br>';
-    mi.procedure_priorities.forEach(function(p, i) {
-      html += '<div style="margin-bottom:4px"><span style="color:#42A5F5;font-weight:700;">' + (i+1) + '.</span> ' + p + '</div>';
-    });
-    if (mi.medicaid_demographic_note) {
-      html += '<br><div style="font-size:11px;color:rgba(255,255,255,0.5);padding:6px 8px;background:rgba(255,255,255,0.04);border-radius:4px;">' + mi.medicaid_demographic_note + '</div>';
-    }
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources.filter(function(s){ return s.category === 'Referral' || s.category === 'Competitor'; }));
     return html;
   }
 
@@ -1046,6 +1064,7 @@ function answer(question) {
     if (mi.strategic_entry) html += '<br><div style="margin-bottom:8px">🎯 <strong>Strategic entry:</strong> ' + mi.strategic_entry + '</div>';
     if (mi.acquisition_target) html += '<br><div style="padding:8px;background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.3);border-radius:6px;font-size:11px;">💡 <strong>Acquisition target:</strong> ' + mi.acquisition_target + '</div>';
     if (mi.ohsu_legacy_update) html += '<br><div style="font-size:11px;color:rgba(255,255,255,0.5);">📰 ' + mi.ohsu_legacy_update + '</div>';
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources.filter(function(s){ return s.category === 'Demographics' || s.category === 'Medicare'; }));
     return html;
   }
 
@@ -1058,6 +1077,7 @@ function answer(question) {
     if (mi.competitor_moat) html += '<br><div style="font-size:11px;color:rgba(255,255,255,0.5);">🛡 <strong>Competitive moat:</strong> ' + mi.competitor_moat + '</div>';
     if (mi.con_law) html += '<br><div style="font-size:11px;color:rgba(255,255,255,0.5);">⚖️ <strong>Regulatory:</strong> ' + mi.con_law + '</div>';
     if (mi.acquisition_target) html += '<br><div style="padding:8px;background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.3);border-radius:6px;font-size:11px;">💡 <strong>Top recommendation:</strong> ' + mi.acquisition_target + '</div>';
+    if (mi.sources && mi.sources.length) html += sourcesFooter(mi.sources.filter(function(s){ return s.category === 'Competitor' || s.category === 'Regulatory'; }));
     return html;
   }
 
