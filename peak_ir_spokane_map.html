@@ -765,6 +765,11 @@ function answer(question) {
   var q = question.toLowerCase().trim();
   var zips = Object.keys(t);
 
+  // -- FOLLOW-UP / ELABORATION → skip local NLP, escalate to Claude AI --
+  if (/^(tell me more|more about|more detail|elaborate|explain more|can you explain|go deeper|further|dig into|what.*process|filing.*(process|require|step|criteria)|timeline.*for|step.by.step|how.*work.*in detail|who.*review|what.*criteria|what.*require)/.test(q)) {
+    return null;
+  }
+
   // -- HELP / CAPABILITIES (check first, before anything else) --
   if (/what.*can you|what.*do you know|what.*question|help|capabilities|how do you work|what.*answer|what.*ask|what.*tell me|how.*use|what.*able/.test(q)) {
     return '<strong>Here\'s what I can answer for ' + mkt + ':</strong><br><br>' +
@@ -1127,13 +1132,25 @@ function callClaudeAI(question) {
   var url = (window._scoutSupabaseUrl || '') + '/functions/v1/ai-scout';
   var key = window._scoutSupabaseKey || '';
   var ctx = buildContext();
+  var controller = window.AbortController ? new AbortController() : null;
+  var timer = controller ? setTimeout(function() { controller.abort(); }, 15000) : null;
   return fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
-    body: JSON.stringify({ question: question, marketName: window._scoutMarketName || 'Unknown', context: ctx })
-  }).then(function(r) { return r.json(); })
-    .then(function(d) { return d.answer || '<em style="color:rgba(255,255,255,0.5)">No response from AI Scout. Please try again.</em>'; })
-    .catch(function() { return '<em style="color:rgba(255,255,255,0.5)">AI Scout is temporarily unavailable. Please try again shortly.</em>'; });
+    body: JSON.stringify({ question: question, marketName: window._scoutMarketName || 'Unknown', context: ctx }),
+    signal: controller ? controller.signal : undefined
+  }).then(function(r) {
+    if (timer) clearTimeout(timer);
+    return r.json();
+  }).then(function(d) {
+    return d.answer || '<em style="color:rgba(255,255,255,0.5)">No response from AI Scout. Please try again.</em>';
+  }).catch(function(e) {
+    if (timer) clearTimeout(timer);
+    if (e && e.name === 'AbortError') {
+      return '<em style="color:rgba(255,255,255,0.5)">AI Scout took too long to respond. Try a more specific question, or check back in a moment.</em>';
+    }
+    return '<em style="color:rgba(255,255,255,0.5)">AI Scout is temporarily unavailable. Please try again shortly.</em>';
+  });
 }
 
 // -- UI --
@@ -1197,11 +1214,12 @@ function init() {
     msgs.scrollTop = msgs.scrollHeight;
   }
 
-  function showTyping() {
+  function showTyping(label) {
     var msg = document.createElement('div');
     msg.className = 'scout-msg bot';
     msg.id = 'scoutTyping';
-    msg.innerHTML = '<div class="scout-bubble"><div class="scout-typing"><span></span><span></span><span></span></div></div>';
+    var labelHtml = label ? '<em style="font-size:10px;color:rgba(255,255,255,0.35);font-style:normal;margin-left:6px;">' + label + '</em>' : '';
+    msg.innerHTML = '<div class="scout-bubble"><div class="scout-typing"><span></span><span></span><span></span>' + labelHtml + '</div></div>';
     msgs.appendChild(msg);
     msgs.scrollTop = msgs.scrollHeight;
   }
@@ -1215,21 +1233,23 @@ function init() {
     addMsg(text, 'user');
     input.value = '';
     chips.style.display = 'none';
-    showTyping();
     var localAnswer = answer(text);
     if (localAnswer !== null) {
       // Fast local NLP answer
+      showTyping();
       setTimeout(function() {
         hideTyping();
         addMsg(localAnswer, 'bot');
       }, 380 + Math.random() * 300);
     } else if (window._scoutSupabaseUrl && window._scoutSupabaseKey) {
-      // Unknown question → escalate to Claude AI
+      // Unknown or follow-up → escalate to Claude AI (15s timeout)
+      showTyping('Asking Claude AI…');
       callClaudeAI(text).then(function(aiReply) {
         hideTyping();
         addMsg(aiReply, 'bot');
       });
     } else {
+      showTyping();
       setTimeout(function() {
         hideTyping();
         addMsg('I don\'t have a match for that. Try rephrasing — or type <strong>help</strong> to see what I can answer.', 'bot');
