@@ -204,6 +204,8 @@ var competitors = [{"name": "Adventist Health Portland", "lat": 45.487, "lon": -
 var tracts = [{"lat": 45.487, "lon": -122.596, "pop": 44800, "label": "SE Portland"}, {"lat": 45.462, "lon": -122.644, "pop": 38200, "label": "Sellwood"}, {"lat": 45.447, "lon": -122.628, "pop": 31600, "label": "Milwaukie"}, {"lat": 45.435, "lon": -122.548, "pop": 28400, "label": "Clackamas"}, {"lat": 45.377, "lon": -122.602, "pop": 49200, "label": "Oregon City"}, {"lat": 45.364, "lon": -122.664, "pop": 22800, "label": "West Linn"}, {"lat": 45.469, "lon": -122.498, "pop": 33600, "label": "Happy Valley"}, {"lat": 45.51, "lon": -122.552, "pop": 43200, "label": "Parkrose Heights"}, {"lat": 45.498, "lon": -122.522, "pop": 46800, "label": "Rockwood"}, {"lat": 45.556, "lon": -122.672, "pop": 32100, "label": "St. Johns"}];
 var growthZones = [{"name": "Adventist / SE Core", "lat": 45.487, "lon": -122.596, "radius_mi": 3, "color": "#e74c3c", "why": "Adventist Health Portland \u2014 primary partnership target, 44K Medicare-eligible population"}, {"name": "Clackamas County Prime", "lat": 45.405, "lon": -122.572, "radius_mi": 5, "color": "#f39c12", "why": "Fastest-growing county in Oregon \u2014 age 55+ growing 8% YoY, zero outpatient IR in corridor"}, {"name": "West Linn / Lake Oswego", "lat": 45.364, "lon": -122.664, "radius_mi": 4, "color": "#9b59b6", "why": "Highest income + Medicare in metro \u2014 affluent retirees, demand for premium outpatient IR"}, {"name": "Happy Valley Corridor", "lat": 45.469, "lon": -122.498, "radius_mi": 3, "color": "#3498db", "why": "Rapidly growing suburb \u2014 new 55+ communities, zero IR competitors within 15 min"}];
 var contracts = [{"name": "Adventist Health Portland", "lat": 45.487, "lon": -122.596, "type": "Target Partner", "detail": "SE Portland, OR \u2014 Proposed Peak IR partnership site"}];
+var marketIntel = {"con_law": "Oregon has NO CON restriction for outpatient ASC/OBL in Portland metro \u2014 free to open an independent IR facility without regulatory approval.", "payer_mix_note": "Medicare ~45%, Medicaid (Oregon Health Plan) ~28%, Commercial ~27%. Solid payer mix \u2014 best commercial % of the 4 markets. Medicaid not dominant here.", "medicaid_risk": "Moderate \u2014 28% Oregon Health Plan at reduced rates, but 27% commercial and 45% Medicare makes the economics workable. Better than Yakima by a wide margin.", "key_referral_sources": ["Northwest Primary Care (NWPC) \u2014 key independent referral group, SE Portland", "Adventist Health Portland PCPs (46K ED visits/year, growing)", "SE Portland community health centers", "Providence-affiliated independent PCPs in SW Portland"], "top_competitor": "OHSU Dotter IR Institute \u2014 nationally recognized academic IR program, Level 1 Trauma. Dominant for complex/academic cases.", "incumbent_at_adventist": "DRPC (Diagnostic Radiologists PC) holds a 50-year exclusive relationship with Adventist Health Portland. This is the primary barrier to Adventist partnership \u2014 DRPC is deeply entrenched and will not be easily displaced.", "competitor_moat": "DRPC locked in at Adventist. OHSU dominates academic IR. Providence has 3 employed IR physicians. Legacy Emanuel uses OHSU IR staff part-time (Wednesdays only \u2014 significant scheduling gap).", "strategic_entry": "Target non-Adventist referral flows via Northwest Primary Care (NWPC). Legacy Emanuel is now independent (OHSU merger terminated May 2025) \u2014 their part-time OHSU IR arrangement creates a scheduling gap that Peak IR could fill with consistent OR access.", "ohsu_legacy_update": "OHSU-Legacy merger was terminated May 2025. Legacy Emanuel Medical Center is now fully independent. Their IR is covered by OHSU staff on a limited schedule \u2014 this is a partnership opportunity for Peak IR.", "medicare_growth": "SE Portland and Clackamas County 65+ population growing faster than Portland metro average. Adventist Health expanding ED (46K visits/year) increases referral catchment.", "procedure_priorities": ["PAD/CLI treatment (high poverty + Medicare density in SE Portland)", "UFE (underserved in SE Portland corridor)", "Vertebroplasty/Kyphoplasty", "Port placement/vascular access", "Hepatic and biliary interventions"]};
+window._scoutMarketIntel = marketIntel;
 
 // -- MAP INIT --
 var map = L.map('map', {
@@ -764,6 +766,11 @@ function answer(question) {
       '<div style="margin-bottom:6px">📊 <strong>Market summary</strong> — "market overview" gives the full picture</div>' +
       '<div style="margin-bottom:6px">🔢 <strong>Score formula</strong> — "how is score calculated" explains the 100-pt model</div>' +
       '<div style="margin-bottom:6px">⚖️ <strong>Compare zips</strong> — "compare 99216 and 99037" runs a side-by-side</div>' +
+      '<div style="margin-bottom:6px">⚖️ <strong>CON law</strong> — "CON law" or "regulatory barriers" explains expansion rules</div>' +
+      '<div style="margin-bottom:6px">💰 <strong>Payer mix</strong> — "payer mix" shows Medicare/Medicaid/commercial breakdown</div>' +
+      '<div style="margin-bottom:6px">📍 <strong>Referral sources</strong> — "referral sources" identifies key referring physicians</div>' +
+      '<div style="margin-bottom:6px">💉 <strong>Procedures</strong> — "procedure priorities" shows top IR cases for this market</div>' +
+      '<div style="margin-bottom:6px">🎯 <strong>Strategy</strong> — "entry strategy" gives a market entry recommendation</div>' +
       '<br><small style="color:rgba(255,255,255,0.4)">Tip: you can also click any zip on the map to see its full data instantly.</small>';
   }
 
@@ -983,6 +990,77 @@ function answer(question) {
     return html;
   }
 
+  // -- MARKET INTEL (CON, payer mix, referrals, procedures, growth) --
+  var mi = window._scoutMarketIntel || {};
+
+  // -- CON LAW / REGULATORY --
+  if (/con law|certificate of need|regulatory|asc|surgery center|open.*center|expand|license|permit|regulation|legal.*barrier|approval/.test(q)) {
+    if (!mi.con_law) return 'No regulatory data loaded for this market yet. Check back after the next map update.';
+    var html = '<strong>Regulatory / CON Law — ' + mkt + ':</strong><br><br>';
+    html += '<div style="margin-bottom:8px">' + mi.con_law + '</div>';
+    if (mi.medicaid_risk) html += '<br>' + statRow('Medicaid risk', mi.medicaid_risk);
+    return html;
+  }
+
+  // -- PAYER MIX --
+  if (/payer|payer mix|insurance|medicaid|medicare.*mix|reimburs|margin|revenue|financial risk|how.*paid|payment/.test(q)) {
+    if (!mi.payer_mix_note) return 'No payer mix data loaded for this market yet.';
+    var html = '<strong>Payer Mix — ' + mkt + ':</strong><br><br>';
+    html += '<div style="margin-bottom:8px">' + mi.payer_mix_note + '</div>';
+    if (mi.medicaid_risk) {
+      html += '<br><div style="padding:8px;background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.3);border-radius:6px;font-size:11px;">';
+      html += '⚠️ <strong>Medicaid Risk:</strong> ' + mi.medicaid_risk + '</div>';
+    }
+    return html;
+  }
+
+  // -- REFERRAL SOURCES --
+  if (/referral|refer|pcp|primary care|physician.*partner|who.*send|send.*patient|referring|source.*patient|patient.*source/.test(q)) {
+    if (!mi.key_referral_sources || !mi.key_referral_sources.length) return 'No referral source data loaded for this market yet.';
+    var html = '<strong>Key referral sources — ' + mkt + ':</strong><br><br>';
+    mi.key_referral_sources.forEach(function(r, i) {
+      html += '<div style="margin-bottom:6px">📍 ' + r + '</div>';
+    });
+    if (mi.strategic_entry) html += '<br><small style="color:rgba(255,255,255,0.5)">' + mi.strategic_entry + '</small>';
+    return html;
+  }
+
+  // -- PROCEDURE PRIORITIES --
+  if (/procedure|pad|ufe|fibroid|vertebro|kyphoplasty|dialysis|hepatic|port|vascular|what.*treat|what.*perform|what.*service|service.*offer|emboliz|ablat/.test(q)) {
+    if (!mi.procedure_priorities || !mi.procedure_priorities.length) return 'No procedure priority data loaded for this market yet.';
+    var html = '<strong>Procedure priorities — ' + mkt + ':</strong><br><br>';
+    mi.procedure_priorities.forEach(function(p, i) {
+      html += '<div style="margin-bottom:4px"><span style="color:#42A5F5;font-weight:700;">' + (i+1) + '.</span> ' + p + '</div>';
+    });
+    if (mi.medicaid_demographic_note) {
+      html += '<br><div style="font-size:11px;color:rgba(255,255,255,0.5);padding:6px 8px;background:rgba(255,255,255,0.04);border-radius:4px;">' + mi.medicaid_demographic_note + '</div>';
+    }
+    return html;
+  }
+
+  // -- MARKET GROWTH / TRENDS --
+  if (/growth|trend|growing|future|outlook|forecast|long.term|runway|65\+.*grow|grow.*65\+|aging|demographic.*trend|market.*grow/.test(q)) {
+    if (!mi.medicare_growth) return 'No market growth data loaded for this market yet.';
+    var html = '<strong>Market growth outlook — ' + mkt + ':</strong><br><br>';
+    html += '<div style="margin-bottom:8px">📈 ' + mi.medicare_growth + '</div>';
+    if (mi.strategic_entry) html += '<br><div style="margin-bottom:8px">🎯 <strong>Strategic entry:</strong> ' + mi.strategic_entry + '</div>';
+    if (mi.acquisition_target) html += '<br><div style="padding:8px;background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.3);border-radius:6px;font-size:11px;">💡 <strong>Acquisition target:</strong> ' + mi.acquisition_target + '</div>';
+    if (mi.ohsu_legacy_update) html += '<br><div style="font-size:11px;color:rgba(255,255,255,0.5);">📰 ' + mi.ohsu_legacy_update + '</div>';
+    return html;
+  }
+
+  // -- STRATEGIC ENTRY / HOW TO ENTER --
+  if (/strateg|entry|enter|how.*get.*in|how.*start|approach|recommend|best.*move|plan|playbook|compete|beat|win|differentiat/.test(q)) {
+    if (!mi.strategic_entry) return 'No strategic entry data loaded for this market yet.';
+    var html = '<strong>Market entry strategy — ' + mkt + ':</strong><br><br>';
+    html += '<div style="margin-bottom:8px">🎯 ' + mi.strategic_entry + '</div>';
+    if (mi.top_competitor) html += '<br>' + statRow('Key competitor', mi.top_competitor.split(' — ')[0]);
+    if (mi.competitor_moat) html += '<br><div style="font-size:11px;color:rgba(255,255,255,0.5);">🛡 <strong>Competitive moat:</strong> ' + mi.competitor_moat + '</div>';
+    if (mi.con_law) html += '<br><div style="font-size:11px;color:rgba(255,255,255,0.5);">⚖️ <strong>Regulatory:</strong> ' + mi.con_law + '</div>';
+    if (mi.acquisition_target) html += '<br><div style="padding:8px;background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.3);border-radius:6px;font-size:11px;">💡 <strong>Top recommendation:</strong> ' + mi.acquisition_target + '</div>';
+    return html;
+  }
+
   // -- POVERTY / MEDICAID --
   if (/poverty|medicaid|low.income|underserved pop|social/.test(q)) {
     var ranked = zips.map(function(z){ return {z:z,v:t[z].poverty_rate||0,d:t[z]}; })
@@ -1042,8 +1120,9 @@ function init() {
   var chips = panel.querySelector('#scoutChips');
 
   var suggestions = [
-    'Help', 'Top targets', 'IR groups', 'Medicare rates',
-    'Uncontested zips', 'Drive times', 'Growth zones', 'Market summary'
+    'Help', 'Top targets', 'Entry strategy', 'Payer mix',
+    'Referral sources', 'Procedure priorities', 'CON law', 'Growth outlook',
+    'IR groups', 'Medicare rates', 'Uncontested zips', 'Market summary'
   ];
   suggestions.forEach(function(s) {
     var chip = document.createElement('button');

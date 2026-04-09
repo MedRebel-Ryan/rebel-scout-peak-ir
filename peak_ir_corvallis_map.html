@@ -204,6 +204,8 @@ var competitors = [{"name": "Samaritan Health - Good Samaritan", "lat": 44.5646,
 var tracts = [{"lat": 44.5646, "lon": -123.262, "pop": 32840, "label": "Corvallis North"}, {"lat": 44.556, "lon": -123.274, "pop": 14260, "label": "Corvallis SW"}, {"lat": 44.6365, "lon": -123.1059, "pop": 41600, "label": "Albany"}, {"lat": 44.538, "lon": -123.356, "pop": 12300, "label": "Philomath"}, {"lat": 44.537, "lon": -122.907, "pop": 16800, "label": "Lebanon"}];
 var growthZones = [{"name": "Corvallis SW Premium", "lat": 44.538, "lon": -123.29, "radius_mi": 3, "color": "#e74c3c", "why": "Highest Medicare + age 55+ in metro \u2014 zero IR competitors, high-income surgical candidates"}, {"name": "Albany Expansion", "lat": 44.6365, "lon": -123.1059, "radius_mi": 4, "color": "#f39c12", "why": "41,600 population with 30%+ age 55+ \u2014 Samaritan has limited IR, significant gap"}, {"name": "Lebanon / Santiam Corridor", "lat": 44.537, "lon": -122.907, "radius_mi": 4, "color": "#3498db", "why": "Rural underserved \u2014 nearest IR is 30+ min, aging population with no outpatient IR option"}];
 var contracts = [{"name": "Good Samaritan Regional Medical", "lat": 44.5646, "lon": -123.262, "type": "Hospital Partner", "detail": "Corvallis, OR \u2014 Target contract for Peak IR partnership"}];
+var marketIntel = {"con_law": "Oregon HAS a CON law \u2014 new healthcare facility requires Certificate of Need approval. Constrains independent ASC greenfield expansion.", "payer_mix_note": "Medicare ~58%, Medicaid (Oregon Health Plan) ~22%, Commercial ~20%. Best payer mix of the Oregon markets. OSU/university population skews younger in Corvallis core zips.", "medicaid_risk": "Moderate \u2014 OR Medicaid (Oregon Health Plan) reimburses at reduced rates, but 58% Medicare concentration overall makes this market economically viable.", "key_referral_sources": ["Corvallis Clinic physicians (NOW Optum/UnitedHealth since March 2024 \u2014 referral access may be restricted)", "Samaritan Health PCPs", "Albany General PCPs and specialists", "OHSU-affiliated community physicians in mid-valley"], "top_competitor": "Samaritan Health Services \u2014 dominant system with >1,000 IR procedures/year. Acquiring MultiCare affiliation closing mid-2026 \u2014 disruption window opening.", "competitor_moat": "Samaritan controls the dominant hospital IR volume. Corvallis Clinic locked by Optum/UnitedHealth (March 2024 acquisition) \u2014 traditional referral flows restricted. Corvallis Radiology PC is the only independent IR group.", "acquisition_target": "Corvallis Radiology PC \u2014 4 fellowship-trained IR radiologists, independent, the ONLY non-hospital IR in the market. Preferred entry vehicle. Acquisition avoids CON and instantly creates a market position.", "strategic_entry": "RECOMMENDED: Acquire or partner with Corvallis Radiology PC. Act before Samaritan/MultiCare consolidation closes mid-2026. Disruption window is open NOW \u2014 Samaritan leadership focused on merger logistics, not competitive defense.", "medicare_growth": "Benton County 65+ population growing steadily. OSU retirees and Willamette Valley migration driving demand for premium outpatient IR services.", "procedure_priorities": ["PAD/CLI treatment", "UFE (underserved in mid-Willamette Valley)", "Vertebroplasty/Kyphoplasty (high 65+ concentration in Albany/Lebanon)", "Oncologic interventions (embolization, ablation)"]};
+window._scoutMarketIntel = marketIntel;
 
 // -- MAP INIT --
 var map = L.map('map', {
@@ -764,6 +766,11 @@ function answer(question) {
       '<div style="margin-bottom:6px">📊 <strong>Market summary</strong> — "market overview" gives the full picture</div>' +
       '<div style="margin-bottom:6px">🔢 <strong>Score formula</strong> — "how is score calculated" explains the 100-pt model</div>' +
       '<div style="margin-bottom:6px">⚖️ <strong>Compare zips</strong> — "compare 99216 and 99037" runs a side-by-side</div>' +
+      '<div style="margin-bottom:6px">⚖️ <strong>CON law</strong> — "CON law" or "regulatory barriers" explains expansion rules</div>' +
+      '<div style="margin-bottom:6px">💰 <strong>Payer mix</strong> — "payer mix" shows Medicare/Medicaid/commercial breakdown</div>' +
+      '<div style="margin-bottom:6px">📍 <strong>Referral sources</strong> — "referral sources" identifies key referring physicians</div>' +
+      '<div style="margin-bottom:6px">💉 <strong>Procedures</strong> — "procedure priorities" shows top IR cases for this market</div>' +
+      '<div style="margin-bottom:6px">🎯 <strong>Strategy</strong> — "entry strategy" gives a market entry recommendation</div>' +
       '<br><small style="color:rgba(255,255,255,0.4)">Tip: you can also click any zip on the map to see its full data instantly.</small>';
   }
 
@@ -983,6 +990,77 @@ function answer(question) {
     return html;
   }
 
+  // -- MARKET INTEL (CON, payer mix, referrals, procedures, growth) --
+  var mi = window._scoutMarketIntel || {};
+
+  // -- CON LAW / REGULATORY --
+  if (/con law|certificate of need|regulatory|asc|surgery center|open.*center|expand|license|permit|regulation|legal.*barrier|approval/.test(q)) {
+    if (!mi.con_law) return 'No regulatory data loaded for this market yet. Check back after the next map update.';
+    var html = '<strong>Regulatory / CON Law — ' + mkt + ':</strong><br><br>';
+    html += '<div style="margin-bottom:8px">' + mi.con_law + '</div>';
+    if (mi.medicaid_risk) html += '<br>' + statRow('Medicaid risk', mi.medicaid_risk);
+    return html;
+  }
+
+  // -- PAYER MIX --
+  if (/payer|payer mix|insurance|medicaid|medicare.*mix|reimburs|margin|revenue|financial risk|how.*paid|payment/.test(q)) {
+    if (!mi.payer_mix_note) return 'No payer mix data loaded for this market yet.';
+    var html = '<strong>Payer Mix — ' + mkt + ':</strong><br><br>';
+    html += '<div style="margin-bottom:8px">' + mi.payer_mix_note + '</div>';
+    if (mi.medicaid_risk) {
+      html += '<br><div style="padding:8px;background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.3);border-radius:6px;font-size:11px;">';
+      html += '⚠️ <strong>Medicaid Risk:</strong> ' + mi.medicaid_risk + '</div>';
+    }
+    return html;
+  }
+
+  // -- REFERRAL SOURCES --
+  if (/referral|refer|pcp|primary care|physician.*partner|who.*send|send.*patient|referring|source.*patient|patient.*source/.test(q)) {
+    if (!mi.key_referral_sources || !mi.key_referral_sources.length) return 'No referral source data loaded for this market yet.';
+    var html = '<strong>Key referral sources — ' + mkt + ':</strong><br><br>';
+    mi.key_referral_sources.forEach(function(r, i) {
+      html += '<div style="margin-bottom:6px">📍 ' + r + '</div>';
+    });
+    if (mi.strategic_entry) html += '<br><small style="color:rgba(255,255,255,0.5)">' + mi.strategic_entry + '</small>';
+    return html;
+  }
+
+  // -- PROCEDURE PRIORITIES --
+  if (/procedure|pad|ufe|fibroid|vertebro|kyphoplasty|dialysis|hepatic|port|vascular|what.*treat|what.*perform|what.*service|service.*offer|emboliz|ablat/.test(q)) {
+    if (!mi.procedure_priorities || !mi.procedure_priorities.length) return 'No procedure priority data loaded for this market yet.';
+    var html = '<strong>Procedure priorities — ' + mkt + ':</strong><br><br>';
+    mi.procedure_priorities.forEach(function(p, i) {
+      html += '<div style="margin-bottom:4px"><span style="color:#42A5F5;font-weight:700;">' + (i+1) + '.</span> ' + p + '</div>';
+    });
+    if (mi.medicaid_demographic_note) {
+      html += '<br><div style="font-size:11px;color:rgba(255,255,255,0.5);padding:6px 8px;background:rgba(255,255,255,0.04);border-radius:4px;">' + mi.medicaid_demographic_note + '</div>';
+    }
+    return html;
+  }
+
+  // -- MARKET GROWTH / TRENDS --
+  if (/growth|trend|growing|future|outlook|forecast|long.term|runway|65\+.*grow|grow.*65\+|aging|demographic.*trend|market.*grow/.test(q)) {
+    if (!mi.medicare_growth) return 'No market growth data loaded for this market yet.';
+    var html = '<strong>Market growth outlook — ' + mkt + ':</strong><br><br>';
+    html += '<div style="margin-bottom:8px">📈 ' + mi.medicare_growth + '</div>';
+    if (mi.strategic_entry) html += '<br><div style="margin-bottom:8px">🎯 <strong>Strategic entry:</strong> ' + mi.strategic_entry + '</div>';
+    if (mi.acquisition_target) html += '<br><div style="padding:8px;background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.3);border-radius:6px;font-size:11px;">💡 <strong>Acquisition target:</strong> ' + mi.acquisition_target + '</div>';
+    if (mi.ohsu_legacy_update) html += '<br><div style="font-size:11px;color:rgba(255,255,255,0.5);">📰 ' + mi.ohsu_legacy_update + '</div>';
+    return html;
+  }
+
+  // -- STRATEGIC ENTRY / HOW TO ENTER --
+  if (/strateg|entry|enter|how.*get.*in|how.*start|approach|recommend|best.*move|plan|playbook|compete|beat|win|differentiat/.test(q)) {
+    if (!mi.strategic_entry) return 'No strategic entry data loaded for this market yet.';
+    var html = '<strong>Market entry strategy — ' + mkt + ':</strong><br><br>';
+    html += '<div style="margin-bottom:8px">🎯 ' + mi.strategic_entry + '</div>';
+    if (mi.top_competitor) html += '<br>' + statRow('Key competitor', mi.top_competitor.split(' — ')[0]);
+    if (mi.competitor_moat) html += '<br><div style="font-size:11px;color:rgba(255,255,255,0.5);">🛡 <strong>Competitive moat:</strong> ' + mi.competitor_moat + '</div>';
+    if (mi.con_law) html += '<br><div style="font-size:11px;color:rgba(255,255,255,0.5);">⚖️ <strong>Regulatory:</strong> ' + mi.con_law + '</div>';
+    if (mi.acquisition_target) html += '<br><div style="padding:8px;background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.3);border-radius:6px;font-size:11px;">💡 <strong>Top recommendation:</strong> ' + mi.acquisition_target + '</div>';
+    return html;
+  }
+
   // -- POVERTY / MEDICAID --
   if (/poverty|medicaid|low.income|underserved pop|social/.test(q)) {
     var ranked = zips.map(function(z){ return {z:z,v:t[z].poverty_rate||0,d:t[z]}; })
@@ -1042,8 +1120,9 @@ function init() {
   var chips = panel.querySelector('#scoutChips');
 
   var suggestions = [
-    'Help', 'Top targets', 'IR groups', 'Medicare rates',
-    'Uncontested zips', 'Drive times', 'Growth zones', 'Market summary'
+    'Help', 'Top targets', 'Entry strategy', 'Payer mix',
+    'Referral sources', 'Procedure priorities', 'CON law', 'Growth outlook',
+    'IR groups', 'Medicare rates', 'Uncontested zips', 'Market summary'
   ];
   suggestions.forEach(function(s) {
     var chip = document.createElement('button');
