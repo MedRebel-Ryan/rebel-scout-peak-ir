@@ -1113,7 +1113,7 @@ function init() {
   var fab = document.createElement('button');
   fab.className = 'scout-fab';
   fab.innerHTML = '🔍<span class="scout-badge"></span>';
-  fab.title = 'Ask MedRebel AI';
+  fab.title = 'Ask AI Scout';
   document.body.appendChild(fab);
 
   var panel = document.createElement('div');
@@ -1122,7 +1122,7 @@ function init() {
     <div class="scout-header">
       <div class="scout-avatar">🗺</div>
       <div class="scout-header-text">
-        <div class="scout-name">MedRebel AI</div>
+        <div class="scout-name">AI Scout</div>
         <div class="scout-status">● Online · ${mkt}</div>
       </div>
       <button class="scout-close" id="scoutClose">✕</button>
@@ -1188,7 +1188,7 @@ function init() {
     }, 380 + Math.random() * 300);
   }
 
-  addMsg('Hey! I\'m <strong>MedRebel AI</strong> — your market intelligence assistant for <strong>' + mkt + '</strong>.<br><br>Ask me about zip codes, Medicare density, competitors, payer mix, CON law, referral sources, or entry strategy. Type <strong>help</strong> to see everything I can answer.', 'bot');
+  addMsg('Hey! I\'m <strong>AI Scout</strong> — your market intelligence assistant for <strong>' + mkt + '</strong>.<br><br>Ask me about zip codes, Medicare density, competitors, payer mix, CON law, referral sources, or entry strategy. Type <strong>help</strong> to see everything I can answer.', 'bot');
 
   fab.onclick = function() {
     panel.classList.toggle('open');
