@@ -121,6 +121,51 @@
     .view-toggle { bottom: 66px; }
     .toggle-btn { padding: 6px 9px; font-size: 9px; }
   }
+
+  /* -- COMPETITOR SCOUT PANEL -- */
+  .comp-intel-panel {
+    position: fixed; right: 0; top: 92px; bottom: 0; z-index: 2001;
+    width: 320px; background: rgba(8,18,34,0.99);
+    border-left: 1px solid rgba(231,76,60,0.35);
+    display: flex; flex-direction: column; overflow: hidden;
+    box-shadow: -8px 0 32px rgba(0,0,0,0.5);
+    transform: translateX(100%); transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+  }
+  .comp-intel-panel.open { transform: translateX(0); }
+  .comp-intel-header {
+    padding: 12px 14px; flex-shrink: 0;
+    background: linear-gradient(135deg, rgba(231,76,60,0.18), rgba(231,76,60,0.05));
+    border-bottom: 1px solid rgba(231,76,60,0.2);
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
+  }
+  .comp-intel-body { flex: 1; overflow-y: auto; }
+  .comp-intel-body::-webkit-scrollbar { width: 3px; }
+  .comp-intel-body::-webkit-scrollbar-thumb { background: rgba(231,76,60,0.3); border-radius: 2px; }
+  .intel-section { padding: 9px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .intel-section-title { font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 6px; }
+  .intel-row { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; font-size: 11px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .intel-row:last-child { border-bottom: none; }
+  .intel-lbl { color: rgba(255,255,255,0.4); }
+  .intel-val { color: #e8edf5; font-weight: 600; }
+  /* Scout button inside Leaflet popup */
+  .scout-comp-btn {
+    display: block; width: 100%; margin-top: 9px;
+    padding: 7px; border-radius: 6px;
+    background: rgba(231,76,60,0.1); border: 1px solid rgba(231,76,60,0.4);
+    color: #e74c3c; font-size: 11px; font-weight: 700; cursor: pointer;
+    font-family: inherit; text-align: center; transition: all 0.2s;
+  }
+  .scout-comp-btn:hover { background: rgba(231,76,60,0.22); }
+  /* Location Scout mode */
+  #map.loc-scout-active { cursor: crosshair !important; }
+  .loc-scout-ring {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: rgba(46,204,113,0.65); border: 2px solid #2ecc71;
+    box-shadow: 0 0 0 8px rgba(46,204,113,0.15);
+    animation: locPulse 1.5s ease-in-out infinite;
+  }
+  @keyframes locPulse { 0%,100%{box-shadow:0 0 0 8px rgba(46,204,113,0.15)} 50%{box-shadow:0 0 0 14px rgba(46,204,113,0.04)} }
+  .toggle-btn.loc-active { color: #2ecc71 !important; background: rgba(46,204,113,0.1) !important; }
 </style>
 </head>
 <body>
@@ -187,6 +232,7 @@
   <button class="toggle-btn" id="btnMedicare" onclick="setView('medicare')">Medicare</button>
   <button class="toggle-btn" id="btnAge" onclick="setView('age')">Age 55+</button>
   <button class="toggle-btn" id="btnIncome" onclick="setView('income')">Income</button>
+  <button class="toggle-btn" id="btnLocScout" onclick="toggleLocationScout(this)">📍 Location Scout</button>
 </div>
 
 <div class="map-legend" id="mapLegend"></div>
@@ -473,20 +519,247 @@ ringLayer.addTo(map);
 
 // -- COMPETITORS --
 var compLayer = L.layerGroup();
-var compColors = {'IR Group': '#e74c3c', 'Hospital IR': '#e67e22', 'Imaging Center': '#9b59b6'};
+var compColors = {'IR Group': '#e74c3c', 'Hospital IR': '#e67e22', 'Imaging Center': '#9b59b6', 'DSO Chain': '#e74c3c', 'Group Practice': '#e67e22', 'Private Practice': '#9b59b6'};
+
+function buildCompPopup(c) {
+  var color = compColors[c.type] || '#e74c3c';
+  var wrap = document.createElement('div');
+  wrap.style.cssText = 'min-width:210px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;';
+  wrap.innerHTML =
+    '<div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:4px;">' + c.name + '</div>' +
+    '<span style="font-size:10px;background:' + color + '22;color:' + color + ';border:1px solid ' + color + '44;border-radius:3px;padding:2px 6px;font-weight:600;">' + (c.type||'Competitor') + '</span>' +
+    '<div style="font-size:11px;color:#555;margin-top:6px;line-height:1.4;">' + (c.detail||'') + '</div>';
+  var btn = document.createElement('button');
+  btn.className = 'scout-comp-btn';
+  btn.innerHTML = '🔍 Run Competitor Scout';
+  btn.onclick = function() { scoutCompetitor(c); };
+  wrap.appendChild(btn);
+  return wrap;
+}
 
 competitors.forEach(function(c) {
   var color = compColors[c.type] || '#e74c3c';
+  var cLng = c.lon !== undefined ? c.lon : c.lng;
   var icon = L.divIcon({
     className: 'comp-marker',
     html: '<div class="comp-dot" style="background:' + color + '"></div>',
     iconSize: [14, 14], iconAnchor: [7, 7]
   });
-  L.marker([c.lat, c.lon], {icon: icon})
-    .bindPopup('<strong>' + c.name + '</strong><br>' + (c.type || '') + '<br>' + (c.detail || ''))
+  L.marker([c.lat, cLng], {icon: icon})
+    .bindPopup(function() { return buildCompPopup(c); })
     .addTo(compLayer);
 });
 compLayer.addTo(map);
+
+// -- COMPETITOR SCOUT ENGINE --
+var _compIntelPanel = null;
+
+function _getOrCreatePanel() {
+  if (_compIntelPanel) return _compIntelPanel;
+  var p = document.createElement('div');
+  p.className = 'comp-intel-panel';
+  p.id = 'compIntelPanel';
+  document.body.appendChild(p);
+  _compIntelPanel = p;
+  return p;
+}
+
+function closeCompIntel() {
+  if (_compIntelPanel) _compIntelPanel.classList.remove('open');
+}
+
+function _threatColor(t) {
+  if (!t) return '#aaa';
+  var tl = t.toLowerCase();
+  return tl === 'critical' ? '#c0392b' : tl === 'high' ? '#e74c3c' : tl === 'medium' ? '#f39c12' : '#2ecc71';
+}
+
+function renderCompIntel(intel, name) {
+  var p = _getOrCreatePanel();
+  var tc = _threatColor(intel.overall_threat);
+  var score = intel.threat_score || 0;
+  p.innerHTML =
+    '<div class="comp-intel-header">' +
+      '<div>' +
+        '<div style="font-size:10px;color:rgba(231,76,60,0.6);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">Competitor Scout</div>' +
+        '<div style="font-size:12px;font-weight:700;color:#e8edf5;line-height:1.3;">' + name + '</div>' +
+      '</div>' +
+      '<button onclick="closeCompIntel()" style="background:none;border:none;color:rgba(255,255,255,0.35);cursor:pointer;font-size:20px;padding:0;line-height:1;">&#x2715;</button>' +
+    '</div>' +
+    '<div class="comp-intel-body">' +
+      '<div class="intel-section">' +
+        '<div class="intel-section-title">Threat Assessment</div>' +
+        '<div style="display:flex;align-items:center;gap:12px;padding:4px 0;">' +
+          '<div style="font-size:36px;font-weight:800;color:' + tc + ';line-height:1;">' + score + '</div>' +
+          '<div>' +
+            '<div style="font-size:13px;font-weight:700;color:' + tc + ';">' + (intel.overall_threat||'Unknown') + ' Threat</div>' +
+            '<div style="font-size:10px;color:rgba(255,255,255,0.35);">out of 100</div>' +
+          '</div>' +
+        '</div>' +
+        '<div style="height:4px;border-radius:2px;background:rgba(255,255,255,0.07);margin-top:6px;"><div style="height:4px;border-radius:2px;width:' + score + '%;background:' + tc + ';"></div></div>' +
+      '</div>' +
+      '<div class="intel-section">' +
+        '<div class="intel-section-title">&#128226; Google Ads</div>' +
+        '<div class="intel-row"><span class="intel-lbl">Running Ads</span><span class="intel-val" style="color:' + (intel.google_ads&&intel.google_ads.running_ads ? '#e74c3c' : '#2ecc71') + '">' + (intel.google_ads&&intel.google_ads.running_ads ? '&#9888; YES' : '&#10003; No') + '</span></div>' +
+        '<div class="intel-row"><span class="intel-lbl">Est. Monthly Spend</span><span class="intel-val">' + (intel.google_ads&&intel.google_ads.estimated_monthly_spend||'N/A') + '</span></div>' +
+        '<div class="intel-row"><span class="intel-lbl">Aggressiveness</span><span class="intel-val">' + (intel.google_ads&&intel.google_ads.ad_aggressiveness||'N/A') + '</span></div>' +
+        (intel.google_ads&&intel.google_ads.likely_keywords&&intel.google_ads.likely_keywords.length ? '<div style="margin-top:4px;font-size:10px;color:rgba(255,255,255,0.35);">Keywords: ' + intel.google_ads.likely_keywords.slice(0,3).join(' &middot; ') + '</div>' : '') +
+      '</div>' +
+      '<div class="intel-section">' +
+        '<div class="intel-section-title">&#128269; SEO Strength</div>' +
+        '<div class="intel-row"><span class="intel-lbl">Overall Strength</span><span class="intel-val">' + (intel.seo&&intel.seo.strength||'N/A') + '</span></div>' +
+        '<div class="intel-row"><span class="intel-lbl">Domain Authority</span><span class="intel-val">' + (intel.seo&&intel.seo.estimated_domain_authority||'?') + '/100</span></div>' +
+        '<div class="intel-row"><span class="intel-lbl">Content Strategy</span><span class="intel-val">' + (intel.seo&&intel.seo.content_strategy||'N/A') + '</span></div>' +
+        (intel.seo&&intel.seo.likely_ranking_for&&intel.seo.likely_ranking_for.length ? '<div style="margin-top:4px;font-size:10px;color:rgba(255,255,255,0.35);">Ranking for: ' + intel.seo.likely_ranking_for.slice(0,3).join(' &middot; ') + '</div>' : '') +
+      '</div>' +
+      '<div class="intel-section">' +
+        '<div class="intel-section-title">&#129302; AI Search Visibility</div>' +
+        '<div class="intel-row"><span class="intel-lbl">Cited in AI Answers</span><span class="intel-val" style="color:' + (intel.ai_search&&intel.ai_search.likely_cited ? '#f39c12' : '#2ecc71') + '">' + (intel.ai_search&&intel.ai_search.likely_cited ? '&#9888; Likely' : '&#10003; Low') + '</span></div>' +
+        '<div class="intel-row"><span class="intel-lbl">AI Visibility</span><span class="intel-val">' + (intel.ai_search&&intel.ai_search.ai_visibility||'N/A') + '</span></div>' +
+        (intel.ai_search&&intel.ai_search.reasoning ? '<div style="margin-top:4px;font-size:10px;color:rgba(255,255,255,0.35);">' + intel.ai_search.reasoning + '</div>' : '') +
+      '</div>' +
+      '<div class="intel-section">' +
+        '<div class="intel-section-title">&#11088; Google Business Profile</div>' +
+        '<div class="intel-row"><span class="intel-lbl">Est. Rating</span><span class="intel-val">' + (intel.gbp&&intel.gbp.estimated_rating||'N/A') + '</span></div>' +
+        '<div class="intel-row"><span class="intel-lbl">Review Volume</span><span class="intel-val">' + (intel.gbp&&intel.gbp.review_volume||'N/A') + '</span></div>' +
+        '<div class="intel-row"><span class="intel-lbl">Profile Strength</span><span class="intel-val">' + (intel.gbp&&intel.gbp.profile_strength||'N/A') + '</span></div>' +
+        '<div class="intel-row"><span class="intel-lbl">Response Rate</span><span class="intel-val">' + (intel.gbp&&intel.gbp.response_rate||'N/A') + '</span></div>' +
+      '</div>' +
+      (intel.vulnerabilities&&intel.vulnerabilities.length ? '<div class="intel-section"><div class="intel-section-title">&#128161; Their Vulnerabilities</div>' + intel.vulnerabilities.map(function(v){return '<div style="font-size:11px;color:rgba(255,210,80,0.85);margin-bottom:3px;line-height:1.4;">&bull; ' + v + '</div>';}).join('') + '</div>' : '') +
+      (intel.your_advantages&&intel.your_advantages.length ? '<div class="intel-section"><div class="intel-section-title">&#10003; Your Advantages</div>' + intel.your_advantages.map(function(a){return '<div style="font-size:11px;color:rgba(80,220,130,0.85);margin-bottom:3px;line-height:1.4;">&bull; ' + a + '</div>';}).join('') + '</div>' : '') +
+      (intel.recommendation ? '<div style="padding:12px 14px;background:rgba(66,165,245,0.06);border-top:1px solid rgba(66,165,245,0.12);"><div style="font-size:9px;font-weight:700;color:rgba(66,165,245,0.55);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">Tactical Play</div><div style="font-size:11px;color:#e8edf5;line-height:1.5;">' + intel.recommendation + '</div></div>' : '') +
+      '<div style="padding:8px 14px;text-align:center;font-size:9px;color:rgba(255,255,255,0.18);">AI-generated assessment &middot; Rebel Scout &middot; For planning use only</div>' +
+    '</div>';
+  p.classList.add('open');
+}
+
+function scoutCompetitor(c) {
+  var p = _getOrCreatePanel();
+  p.innerHTML =
+    '<div class="comp-intel-header">' +
+      '<div>' +
+        '<div style="font-size:10px;color:rgba(231,76,60,0.6);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">Competitor Scout</div>' +
+        '<div style="font-size:12px;font-weight:700;color:#e8edf5;">' + c.name + '</div>' +
+      '</div>' +
+      '<button onclick="closeCompIntel()" style="background:none;border:none;color:rgba(255,255,255,0.35);cursor:pointer;font-size:20px;padding:0;">&#x2715;</button>' +
+    '</div>' +
+    '<div class="comp-intel-body"><div style="padding:40px 16px;text-align:center;">' +
+      '<div style="font-size:28px;margin-bottom:12px;">&#128269;</div>' +
+      '<div style="font-size:13px;font-weight:600;color:#e8edf5;margin-bottom:6px;">Analyzing ' + c.name + '</div>' +
+      '<div style="font-size:11px;color:rgba(255,255,255,0.4);line-height:1.6;">Checking Google Ads activity<br>Assessing SEO strength<br>Scanning AI search presence<br>Profiling Google Business...</div>' +
+    '</div></div>';
+  p.classList.add('open');
+  var url = (window._scoutSupabaseUrl||'') + '/functions/v1/competitor-scout';
+  var key = window._scoutSupabaseKey||'';
+  var controller = window.AbortController ? new AbortController() : null;
+  var timer = controller ? setTimeout(function(){controller.abort();}, 20000) : null;
+  fetch(url, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key},
+    body: JSON.stringify({
+      competitorName: c.name,
+      competitorCity: window._scoutMarketName || '',
+      specialty: c.type || 'Medical',
+      detail: c.detail || ''
+    }),
+    signal: controller ? controller.signal : undefined
+  }).then(function(r){
+    if (timer) clearTimeout(timer);
+    return r.json();
+  }).then(function(intel){
+    renderCompIntel(intel, c.name);
+  }).catch(function(e){
+    if (timer) clearTimeout(timer);
+    var p2 = _getOrCreatePanel();
+    p2.querySelector('.comp-intel-body').innerHTML = '<div style="padding:24px;text-align:center;color:rgba(255,100,100,0.7);font-size:12px;">Scout request failed.<br><small style="color:rgba(255,255,255,0.3)">Check connection or try again.</small></div>';
+  });
+}
+
+// -- LOCATION SCOUT --
+var _locScoutActive = false;
+var _locScoutMarker = null;
+
+function _haversine(lat1, lng1, lat2, lng2) {
+  var R = 3959, dLat = (lat2-lat1)*Math.PI/180, dLng = (lng2-lng1)*Math.PI/180;
+  var a = Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function handleLocationScout(e) {
+  if (!_locScoutActive) return;
+  var lat = e.latlng.lat, lng = e.latlng.lng;
+  if (_locScoutMarker) map.removeLayer(_locScoutMarker);
+  var icon = L.divIcon({className:'',html:'<div class="loc-scout-ring"></div>',iconSize:[20,20],iconAnchor:[10,10]});
+  _locScoutMarker = L.marker([lat,lng],{icon:icon}).addTo(map);
+  var comps = window.competitors||[];
+  var c1 = comps.filter(function(c){return _haversine(lat,lng,c.lat,c.lon||c.lng)<=1;}).length;
+  var c3 = comps.filter(function(c){return _haversine(lat,lng,c.lat,c.lon||c.lng)<=3;}).length;
+  var c5 = comps.filter(function(c){return _haversine(lat,lng,c.lat,c.lon||c.lng)<=5;}).length;
+  _locScoutMarker.bindPopup(
+    '<div style="min-width:220px;font-family:-apple-system,sans-serif;">' +
+    '<div style="font-weight:700;color:#1565c0;font-size:13px;margin-bottom:8px;">&#128205; Location Scout</div>' +
+    '<div style="display:flex;gap:6px;margin-bottom:8px;">' +
+    '<span style="background:#e8f4fd;color:#1565c0;padding:3px 7px;border-radius:4px;font-size:10px;font-weight:600;">1mi: ' + c1 + ' comps</span>' +
+    '<span style="background:#e8f4fd;color:#1565c0;padding:3px 7px;border-radius:4px;font-size:10px;font-weight:600;">3mi: ' + c3 + ' comps</span>' +
+    '<span style="background:#e8f4fd;color:#1565c0;padding:3px 7px;border-radius:4px;font-size:10px;font-weight:600;">5mi: ' + c5 + '</span>' +
+    '</div><div style="font-size:11px;color:#555;">&#8987; Asking AI Scout for location analysis...</div></div>'
+  ).openPopup();
+  var url = (window._scoutSupabaseUrl||'')+'/functions/v1/ai-scout';
+  var key = window._scoutSupabaseKey||'';
+  fetch(url,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+    body:JSON.stringify({
+      question:'Location scout: evaluate this expansion site',
+      marketName:window._scoutMarketName||'Unknown',
+      context:{
+        mode:'location_scout',
+        lat:lat.toFixed(5), lng:lng.toFixed(5),
+        competitors_1mi:c1, competitors_3mi:c3, competitors_5mi:c5,
+        topZips:(Object.keys(window.targeting||{})).slice(0,8).map(function(z){var d=window.targeting[z];return {zip:z,city:d.city,score:calcScore(d),median_income:d.median_income,age_55_plus_pct:d.age_55_plus_pct};})
+      }
+    })
+  }).then(function(r){return r.json();}).then(function(data){
+    if (_locScoutMarker) {
+      _locScoutMarker.setPopupContent(
+        '<div style="min-width:240px;max-width:270px;font-family:-apple-system,sans-serif;">' +
+        '<div style="font-weight:700;color:#1565c0;font-size:13px;margin-bottom:8px;">&#128205; Location Analysis</div>' +
+        '<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">' +
+        '<span style="background:#e8f4fd;color:#1565c0;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600;">1mi: ' + c1 + ' competitors</span>' +
+        '<span style="background:#e8f4fd;color:#1565c0;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600;">3mi: ' + c3 + '</span>' +
+        '<span style="background:#e8f4fd;color:#1565c0;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600;">5mi: ' + c5 + '</span>' +
+        '</div>' +
+        '<div style="font-size:11px;line-height:1.55;color:#333;">' + (data.answer||'Analysis complete.') + '</div>' +
+        '</div>'
+      );
+      _locScoutMarker.openPopup();
+    }
+  }).catch(function(){
+    if (_locScoutMarker) {
+      _locScoutMarker.setPopupContent(
+        '<div style="min-width:200px;font-family:-apple-system,sans-serif;">' +
+        '<div style="font-weight:700;color:#1565c0;font-size:12px;margin-bottom:6px;">&#128205; Location Quick Stats</div>' +
+        '<div style="font-size:11px;">Competitors within 1 mile: <b>' + c1 + '</b></div>' +
+        '<div style="font-size:11px;">Within 3 miles: <b>' + c3 + '</b></div>' +
+        '<div style="font-size:11px;">Within 5 miles: <b>' + c5 + '</b></div>' +
+        '<div style="font-size:10px;color:#999;margin-top:6px;">AI analysis unavailable</div></div>'
+      );
+      _locScoutMarker.openPopup();
+    }
+  });
+}
+
+function toggleLocationScout(btn) {
+  _locScoutActive = !_locScoutActive;
+  document.getElementById('map').classList.toggle('loc-scout-active', _locScoutActive);
+  btn.classList.toggle('loc-active', _locScoutActive);
+  if (_locScoutActive) {
+    map.on('click', handleLocationScout);
+  } else {
+    map.off('click', handleLocationScout);
+    if (_locScoutMarker) { map.removeLayer(_locScoutMarker); _locScoutMarker = null; }
+  }
+}
 
 // -- CONTRACTS --
 var contractLayer = L.layerGroup();
