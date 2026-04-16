@@ -574,6 +574,15 @@ function _threatColor(t) {
   return tl === 'critical' ? '#c0392b' : tl === 'high' ? '#e74c3c' : tl === 'medium' ? '#f39c12' : '#2ecc71';
 }
 
+function toggleScoutMethodology() {
+  var d = document.getElementById('scoutMethodology');
+  var c = document.getElementById('scoutMethodologyChevron');
+  if (!d) return;
+  var open = d.style.display === 'block';
+  d.style.display = open ? 'none' : 'block';
+  if (c) c.style.transform = open ? '' : 'rotate(180deg)';
+}
+
 function renderCompIntel(intel, name) {
   var p = _getOrCreatePanel();
   var tc = _threatColor(intel.overall_threat);
@@ -587,6 +596,19 @@ function renderCompIntel(intel, name) {
       '<button onclick="closeCompIntel()" style="background:none;border:none;color:rgba(255,255,255,0.35);cursor:pointer;font-size:20px;padding:0;line-height:1;">&#x2715;</button>' +
     '</div>' +
     '<div class="comp-intel-body">' +
+      '<div style="padding:6px 14px 8px;border-bottom:1px solid rgba(255,255,255,0.05);">' +
+        '<button onclick="toggleScoutMethodology()" style="background:none;border:none;color:rgba(100,160,255,0.55);cursor:pointer;font-size:10px;display:flex;align-items:center;gap:5px;padding:2px 0;font-weight:600;letter-spacing:0.5px;width:100%;text-align:left;">' +
+          '<span style="font-size:11px;">&#x2139;</span> How is this data compiled? <span id="scoutMethodologyChevron" style="font-size:9px;opacity:0.6;margin-left:auto;">&#9660;</span>' +
+        '</button>' +
+        '<div id="scoutMethodology" style="display:none;margin-top:6px;font-size:10px;color:rgba(255,255,255,0.4);line-height:1.6;padding:8px;background:rgba(255,255,255,0.03);border-radius:4px;">' +
+          '<div style="font-weight:700;color:rgba(255,255,255,0.6);margin-bottom:6px;">Data Sources &amp; Methodology</div>' +
+          '<div style="margin-bottom:4px;"><span style="color:rgba(255,200,80,0.7);">&#128226; Google Ads</span>&nbsp; Estimated from known DSO/practice spending benchmarks, specialty norms, and local market context.</div>' +
+          '<div style="margin-bottom:4px;"><span style="color:rgba(100,200,255,0.7);">&#128269; SEO</span>&nbsp; Domain authority and ranking estimates based on practice size, web presence signals, and competitor density.</div>' +
+          '<div style="margin-bottom:4px;"><span style="color:rgba(160,130,255,0.7);">&#129302; AI Search</span>&nbsp; Likelihood of appearing in ChatGPT, Perplexity, and Google AI Overviews based on content depth and institutional authority.</div>' +
+          '<div style="margin-bottom:6px;"><span style="color:rgba(255,200,80,0.7);">&#11088; GBP</span>&nbsp; Google Business Profile estimates based on practice type, local market, and typical review volumes for this specialty.</div>' +
+          '<div style="font-style:italic;color:rgba(255,255,255,0.2);font-size:9px;border-top:1px solid rgba(255,255,255,0.06);padding-top:5px;">Powered by Claude AI (Anthropic). AI-generated estimates for planning purposes only. Verify before major business decisions.</div>' +
+        '</div>' +
+      '</div>' +
       '<div class="intel-section">' +
         '<div class="intel-section-title">Threat Assessment</div>' +
         '<div style="display:flex;align-items:center;gap:12px;padding:4px 0;">' +
@@ -1567,7 +1589,7 @@ else { init(); }
 </div>
 <script>
 (function() {
-  var PW = 'Horizon2026';
+  var PW = '1985';
   var gate = document.getElementById('horizonGate');
   if (!gate) return;
   if (sessionStorage.getItem('hg_auth') === '1') { gate.remove(); return; }
